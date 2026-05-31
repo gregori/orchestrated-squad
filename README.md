@@ -1,6 +1,6 @@
 # orchestrated-squad
 
-A multi-agent software engineering orchestration system for [opencode](https://opencode.ai). 13 specialized agents collaborate in a structured workflow to take a project from raw idea to shipped PR — with requirements refinement, architecture design, implementation, review, testing, and release.
+A multi-agent software engineering orchestration system supporting **opencode**, **VS Code Copilot Chat**, and **Devin CLI**. 13 specialized agents collaborate in a structured workflow to take a project from raw idea to shipped PR — with requirements refinement, architecture design, implementation, review, testing, and release.
 
 ## Architecture
 
@@ -213,7 +213,7 @@ flowchart LR
 
 ## Skills Included
 
-This repository bundles 5 skills that are integral to the workflow:
+This repository bundles 6 skills that are integral to the workflow:
 
 | Skill | Purpose | Used By |
 |-------|---------|---------|
@@ -222,6 +222,7 @@ This repository bundles 5 skills that are integral to the workflow:
 | **find-skills** | Discover and install domain-specific skills | All agents |
 | **github-issues** | Create/manage GitHub Issues via `gh api` | issue-creator |
 | **caveman-commit** | Generate ultra-compact conventional commit messages | finisher |
+| **constitution-generator** | 6-round interview to generate `CONSTITUTION.md` per project | Initial project setup |
 
 > **Project-specific skills** (e.g., `python-code-style`, `terraform-engineer`, `vercel-react-best-practices`, `sqlalchemy-alembic-expert-best-practices-code-review`) are NOT bundled here. Each agent discovers them automatically via `find-skills` based on the target project's stack. Users should install them with `npx skills add <package> -g -y` in their project.
 
@@ -261,20 +262,65 @@ Actual costs vary with cycle count and model mix. The $10/month Go subscription 
 
 ## Installation
 
+### Multi-Target Support
+
+Install into any project with one of three targets:
+
 ```bash
-# In your project directory:
-./install.sh /path/to/your-project    # Mac/Linux/WSL
-.\install.ps1 \path\to\your-project   # Windows
+# Default: opencode agents in .opencode/agents/
+./install.sh /path/to/your-project
+.\install.ps1 \path\to\your-project
+
+# VS Code: agents in .github/agents/ as .agent.md files
+./install.sh /path/to/your-project --target vscode
+.\install.ps1 \path\to\your-project -Target vscode
+
+# Devin CLI: root AGENTS.md orchestrator + .devin/ subdirs
+./install.sh /path/to/your-project --target devin
+.\install.ps1 \path\to\your-project -Target devin
+
+# Force overwrite existing files:
+./install.sh /path/to/your-project --target devin --force
+.\install.ps1 \path\to\your-project -Target devin -Force
 ```
+
+### What Gets Installed Per Target
+
+| Artifact | opencode | vscode | devin |
+|----------|----------|--------|-------|
+| Agents | `.opencode/agents/` | `.github/agents/` | `AGENTS.md` (root) |
+| Skills | `.agents/skills/` | `.github/skills/` | `.devin/skills/` + `.agents/skills/` |
+| Config | `opencode.json`, `.opencode/epic-guide.md` | — | `.devin/config.json` |
+| Workflow | `.workflow/` | — | `.devin/phases/` |
+| Utils | — | — | `.devin/bin/` |
+
+### Devin CLI Notes
+
+Devin CLI reads `AGENTS.md` from the project root. The install script:
+1. Backs up any existing `AGENTS.md` → `AGENTS.md.bak.opencode`
+2. Copies `.devin/AGENTS.md` to root
+3. To restore opencode: run `install.sh /path/to/target --target opencode` (restores backup)
 
 See [install.sh](./install.sh) or [install.ps1](./install.ps1) for details.
 
 ## Getting Started
 
-1. Install orchestrated-squad into your project
+### opencode
+1. `./install.sh /path/to/project`
 2. Run `opencode` in your project directory
 3. Call `@planner` with your epic idea
-4. The planner will call product-manager, who will interview you via `grill-me`, then orchestrate the entire workflow
+
+### VS Code
+1. `./install.sh /path/to/project --target vscode`
+2. Open the project in VS Code
+3. Open Copilot Chat and type `@planner <your epic idea>`
+
+### Devin CLI
+1. `./install.sh /path/to/project --target devin`
+2. Run `devin` in your project directory
+3. Devin's orchestrator (AGENTS.md) auto-invokes phase subagents
+
+The planner calls product-manager, who interviews you via `grill-me`, then orchestrates the entire workflow.
 
 ## Issue Lifecycle
 

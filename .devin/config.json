@@ -1,0 +1,23 @@
+{
+  "agent": {
+    "model": "sonnet"
+  },
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Edit(**)",
+      "Exec(git)",
+      "Exec(gh)",
+      "Exec(npm run *)",
+      "Exec(npx *)",
+      "Exec(python *)",
+      "Exec(pytest *)",
+      "Exec(ruff *)"
+    ],
+    "deny": [
+      "Exec(sudo *)",
+      "Exec(rm -rf *)",
+      "Exec(del /F *)"
+    ]
+  }
+}
