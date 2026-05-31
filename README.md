@@ -281,16 +281,14 @@ See [install.sh](./install.sh) or [install.ps1](./install.ps1) for details.
 Each task becomes a GitHub Issue that moves through labels as agents work on it. This provides full traceability of development:
 
 ```mermaid
-stateDiagram-v2
-    [*] --> todo: issue-creator
-    todo --> in-progress: implementer / sre
-    in-progress --> in-review: reviewer
-    in-review --> in-progress: reviewer found issues
-    in-review --> testing: linter (clean)
-    in-progress --> testing: linter (after fix)
-    testing --> in-progress: tester found failures
-    testing --> done: finisher
-    done --> [*]
+flowchart LR
+    todo["`status: todo`"] -->|issue-creator| in_progress["`status: in-progress`"]
+    in_progress -->|implementer / sre| in_progress
+    in_progress -->|reviewer| in_review["`status: in-review`"]
+    in_review -->|issues found| in_progress
+    in_review -->|clean| testing["`status: testing`"]
+    testing -->|failures| in_progress
+    testing -->|passed| done["`status: done`"]
 ```
 
 | Label | Set by | Description |
