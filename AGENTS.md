@@ -1,5 +1,7 @@
 # Agent Guidelines for orchestrated-squad
 
+Supported targets: **opencode** · **VS Code Copilot Chat** · **Devin CLI** · **Claude Code**
+
 ## Workflow Overview
 
 ```
@@ -16,6 +18,14 @@ planner (orchestrates)
 
 bugs: bug-triager → routes to appropriate agent(s)
 ```
+
+## Claude Code Target
+
+Agents for Claude Code live in `.claude/agents/`. Key differences from opencode:
+- Models use short aliases: `sonnet`, `haiku`, `opus` (not vendor-prefixed IDs)
+- Permissions use `tools` / `disallowedTools` lists (not path-based `permission:` blocks)
+- Subagent invocation uses the `Agent` tool in the system prompt
+- Bundled skills are loaded by reading `.agents/skills/<name>/SKILL.md` directly
 
 ## Handoff System
 

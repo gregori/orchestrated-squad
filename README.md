@@ -1,6 +1,6 @@
 # orchestrated-squad
 
-A multi-agent software engineering orchestration system supporting **opencode**, **VS Code Copilot Chat**, and **Devin CLI**. 13 specialized agents collaborate in a structured workflow to take a project from raw idea to shipped PR — with requirements refinement, architecture design, implementation, review, testing, and release.
+A multi-agent software engineering orchestration system supporting **opencode**, **VS Code Copilot Chat**, **Devin CLI**, and **Claude Code**. 13 specialized agents collaborate in a structured workflow to take a project from raw idea to shipped PR — with requirements refinement, architecture design, implementation, review, testing, and release.
 
 ## Architecture
 
@@ -237,6 +237,17 @@ This repository bundles 6 skills that are integral to the workflow:
 | tester | minimax-m2.7 | Reliable structured execution for tests ($0.30/$1.20). |
 | linter, issue-creator | minimax-m2.5 | Fastest model (8.3s) for simple mechanical tasks ($0.30/$1.20). |
 
+### Claude Code Model Mapping
+
+When using `--target claude`, agents run on Anthropic models. Model aliases (`sonnet`, `haiku`) resolve to the current pinned version in Claude Code.
+
+| Agent | Claude Model | Rationale |
+|-------|-------------|-----------|
+| linter, issue-creator, tester, doc-writer | `haiku` | Mechanical / structured tasks — fastest and cheapest |
+| All others (planner, PM, RR, tech-analyst, implementer, sre, reviewer, bug-triager, finisher) | `sonnet` | Reasoning, coding, orchestration — best cost-benefit |
+
+> To upgrade the reviewer to maximum quality, change its `model` field to `opus` in `.claude/agents/reviewer.md`.
+
 ## Temperature Guide
 
 | Temp | Agents | Rationale |
@@ -279,6 +290,10 @@ Install into any project with one of three targets:
 ./install.sh /path/to/your-project --target devin
 .\install.ps1 \path\to\your-project -Target devin
 
+# Claude Code: agents in .claude/agents/ as .md files
+./install.sh /path/to/your-project --target claude
+.\install.ps1 \path\to\your-project -Target claude
+
 # Force overwrite existing files:
 ./install.sh /path/to/your-project --target devin --force
 .\install.ps1 \path\to\your-project -Target devin -Force
@@ -286,13 +301,13 @@ Install into any project with one of three targets:
 
 ### What Gets Installed Per Target
 
-| Artifact | opencode | vscode | devin |
-|----------|----------|--------|-------|
-| Agents | `.opencode/agents/` | `.github/agents/` | `AGENTS.md` (root) |
-| Skills | `.agents/skills/` | `.github/skills/` | `.devin/skills/` + `.agents/skills/` |
-| Config | `opencode.json`, `.opencode/epic-guide.md` | — | `.devin/config.json` |
-| Workflow | `.workflow/` | — | `.devin/phases/` |
-| Utils | — | — | `.devin/bin/` |
+| Artifact | opencode | vscode | devin | claude |
+|----------|----------|--------|-------|--------|
+| Agents | `.opencode/agents/` | `.github/agents/` | `AGENTS.md` (root) | `.claude/agents/` |
+| Skills | `.agents/skills/` | `.github/skills/` | `.devin/skills/` + `.agents/skills/` | `.agents/skills/` |
+| Config | `opencode.json`, `.opencode/epic-guide.md` | — | `.devin/config.json` | `.claude/settings.json` |
+| Workflow | `.workflow/` | — | `.devin/phases/` | `.workflow/` |
+| Utils | — | — | `.devin/bin/` | — |
 
 ### Devin CLI Notes
 
@@ -319,6 +334,11 @@ See [install.sh](./install.sh) or [install.ps1](./install.ps1) for details.
 1. `./install.sh /path/to/project --target devin`
 2. Run `devin` in your project directory
 3. Devin's orchestrator (AGENTS.md) auto-invokes phase subagents
+
+### Claude Code
+1. `./install.sh /path/to/project --target claude`
+2. Run `claude` in your project directory
+3. Type `@planner <your epic idea>` in the chat
 
 The planner calls product-manager, who interviews you via `grill-me`, then orchestrates the entire workflow.
 

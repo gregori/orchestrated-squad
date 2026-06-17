@@ -3,14 +3,16 @@
 .SYNOPSIS
     Installs the orchestrated-squad agent workflow into a target project.
 .DESCRIPTION
-    Supports three targets:
+    Supports four targets:
       - opencode (default): agents in .opencode/agents/, skills in .agents/skills/
       - vscode: agents in .github/agents/, skills in .github/skills/
       - devin: root AGENTS.md orchestrator + .devin/ subdirectories
+      - claude: agents in .claude/agents/, skills in .agents/skills/, settings in .claude/settings.json
 
     After installing opencode target, run 'opencode' in the project and call @planner.
     After installing vscode target, open in VS Code and use @planner in Copilot Chat.
     After installing devin target, run 'devin' in the project; root AGENTS.md drives the workflow.
+    After installing claude target, run 'claude' in the project and call @planner.
 .PARAMETER TargetDir
     Path to the target project directory.
 .PARAMETER Target
@@ -21,19 +23,20 @@
     .\install.ps1 D:\projects\my-app
     .\install.ps1 D:\projects\my-app -Target vscode
     .\install.ps1 D:\projects\my-app -Target devin -Force
+    .\install.ps1 D:\projects\my-app -Target claude
 #>
 
 param(
     [Parameter(Mandatory)]
     [string]$TargetDir,
 
-    [ValidateSet('opencode', 'vscode', 'devin')]
+    [ValidateSet('opencode', 'vscode', 'devin', 'claude')]
     [string]$Target = 'opencode',
 
     [switch]$Force
 )
 
-$SquadDir = Split-Path -Parent $PSScriptRoot
+$SquadDir = $PSScriptRoot
 
 if (-not (Test-Path $TargetDir)) {
     Write-Error "Target directory not found: $TargetDir"
@@ -127,6 +130,58 @@ switch ($Target) {
         Write-Host ""
         Write-Host "=== Installation complete! ===" -ForegroundColor Green
         Write-Host "Next: Open $TargetDir in VS Code and use @planner in Copilot Chat." -ForegroundColor Cyan
+    }
+
+    'claude' {
+        # Claude Code agents
+        $agentsDst = Join-Path $TargetDir ".claude\agents"
+
+        if (Test-Path $agentsDst -and -not $Force) {
+            Write-Host "  .claude/agents/ exists (use -Force to overwrite)" -ForegroundColor Yellow
+        } else {
+            New-Item -ItemType Directory -Path $agentsDst -Force | Out-Null
+            Copy-Item -Path "$SquadDir\.claude\agents\*" -Destination $agentsDst -Recurse -Force
+            $count = (Get-ChildItem $agentsDst -Filter "*.md").Count
+            Write-Host "  ✓ $count agents copied" -ForegroundColor Green
+        }
+
+        # Canonical skills
+        $skillsDst = Join-Path $TargetDir ".agents\skills"
+        New-Item -ItemType Directory -Path $skillsDst -Force | Out-Null
+        Copy-Item -Path "$SquadDir\.agents\skills\*" -Destination $skillsDst -Recurse -Force
+        $skillDirs = (Get-ChildItem $skillsDst -Directory).Count
+        Write-Host "  ✓ $skillDirs skills copied" -ForegroundColor Green
+
+        # .claude/settings.json
+        $settingsPath = Join-Path $TargetDir ".claude\settings.json"
+        if (Test-Path $settingsPath) {
+            Write-Host "  . .claude/settings.json exists (skipped)" -ForegroundColor Gray
+        } else {
+            New-Item -ItemType Directory -Path (Join-Path $TargetDir ".claude") -Force | Out-Null
+            Copy-Item -Path (Join-Path $SquadDir ".claude\settings.json") -Destination $settingsPath
+            Write-Host "  ✓ .claude/settings.json created" -ForegroundColor Green
+        }
+
+        # .workflow/ template
+        New-Item -ItemType Directory -Path (Join-Path $TargetDir ".workflow\template") -Force | Out-Null
+        $handoffTmpl = Join-Path $SquadDir ".workflow\template\handoff.md"
+        if (Test-Path $handoffTmpl) {
+            Copy-Item -Path $handoffTmpl -Destination (Join-Path $TargetDir ".workflow\template\") -Force
+            Write-Host "  ✓ .workflow/ template created" -ForegroundColor Green
+        }
+
+        # AGENTS.md
+        $agentsMd = Join-Path $TargetDir "AGENTS.md"
+        if (Test-Path $agentsMd) {
+            Write-Host "  . AGENTS.md exists (skipped)" -ForegroundColor Gray
+        } else {
+            Copy-Item -Path (Join-Path $SquadDir "AGENTS.md") -Destination $agentsMd
+            Write-Host "  ✓ AGENTS.md created" -ForegroundColor Green
+        }
+
+        Write-Host ""
+        Write-Host "=== Installation complete! ===" -ForegroundColor Green
+        Write-Host "Next: Run 'claude' in $TargetDir and call @planner with your epic idea." -ForegroundColor Cyan
     }
 
     'devin' {

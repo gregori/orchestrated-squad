@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ============================================================
 # install.sh — Install orchestrated-squad into a target project
-# Usage: ./install.sh /path/to/project [--target opencode|vscode|devin] [--force]
+# Usage: ./install.sh /path/to/project [--target opencode|vscode|devin|claude] [--force]
 # ============================================================
 set -euo pipefail
 
@@ -22,6 +22,7 @@ usage() {
   echo "  $0 /path/to/project                          # Default: opencode"
   echo "  $0 /path/to/project --target vscode           # VS Code agents"
   echo "  $0 /path/to/project --target devin            # Devin CLI workflow"
+  echo "  $0 /path/to/project --target claude           # Claude Code agents"
   echo "  $0 /path/to/project --target devin --force    # Overwrite existing"
   exit 1
 }
@@ -50,8 +51,8 @@ if [ ! -d "$TARGET_DIR" ]; then
 fi
 
 case "$TARGET" in
-  opencode|vscode|devin) ;;
-  *) echo -e "${RED}Error: invalid target '$TARGET'. Use opencode, vscode, or devin.${NC}"; exit 1 ;;
+  opencode|vscode|devin|claude) ;;
+  *) echo -e "${RED}Error: invalid target '$TARGET'. Use opencode, vscode, devin, or claude.${NC}"; exit 1 ;;
 esac
 
 echo -e "${CYAN}=== orchestrated-squad Install (--target $TARGET) ===${NC}"
@@ -130,6 +131,50 @@ elif [ "$TARGET" = "vscode" ]; then
   echo ""
   echo -e "${GREEN}=== Installation complete! ===${NC}"
   echo -e "${CYAN}Next: Open $TARGET_DIR in VS Code and use @planner (Copilot Chat).${NC}"
+
+elif [ "$TARGET" = "claude" ]; then
+  # --- TARGET: claude ---
+  AGENTS_DST="$TARGET_DIR/.claude/agents"
+
+  if [ -d "$AGENTS_DST" ] && [ "$FORCE" != "--force" ]; then
+    echo -e "${YELLOW}  .claude/agents/ exists (use --force to overwrite)${NC}"
+  else
+    mkdir -p "$AGENTS_DST"
+    cp -r "$SQUAD_DIR/.claude/agents/"* "$AGENTS_DST/"
+    COUNT=$(find "$AGENTS_DST" -name "*.md" | wc -l)
+    echo -e "${GREEN}  ✓ $COUNT agents copied${NC}"
+  fi
+
+  mkdir -p "$TARGET_DIR/.agents/skills"
+  cp -r "$SQUAD_DIR/.agents/skills/"* "$TARGET_DIR/.agents/skills/"
+  SKILL_COUNT=$(find "$TARGET_DIR/.agents/skills" -maxdepth 1 -type d | wc -l)
+  echo -e "${GREEN}  ✓ $((SKILL_COUNT - 1)) skills copied${NC}"
+
+  SETTINGS_PATH="$TARGET_DIR/.claude/settings.json"
+  if [ -f "$SETTINGS_PATH" ]; then
+    echo -e "${GRAY}  . .claude/settings.json exists (skipped)${NC}"
+  else
+    mkdir -p "$TARGET_DIR/.claude"
+    cp "$SQUAD_DIR/.claude/settings.json" "$SETTINGS_PATH"
+    echo -e "${GREEN}  ✓ .claude/settings.json created${NC}"
+  fi
+
+  mkdir -p "$TARGET_DIR/.workflow/template"
+  if [ -f "$SQUAD_DIR/.workflow/template/handoff.md" ]; then
+    cp "$SQUAD_DIR/.workflow/template/handoff.md" "$TARGET_DIR/.workflow/template/"
+    echo -e "${GREEN}  ✓ .workflow/ template created${NC}"
+  fi
+
+  if [ -f "$TARGET_DIR/AGENTS.md" ]; then
+    echo -e "${GRAY}  . AGENTS.md exists (skipped)${NC}"
+  else
+    cp "$SQUAD_DIR/AGENTS.md" "$TARGET_DIR/AGENTS.md"
+    echo -e "${GREEN}  ✓ AGENTS.md created${NC}"
+  fi
+
+  echo ""
+  echo -e "${GREEN}=== Installation complete! ===${NC}"
+  echo -e "${CYAN}Next: Run 'claude' in $TARGET_DIR and call @planner with your epic idea.${NC}"
 
 elif [ "$TARGET" = "devin" ]; then
   # --- TARGET: devin ---
