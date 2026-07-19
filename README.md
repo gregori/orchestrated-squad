@@ -81,8 +81,8 @@ runtime guarantee.
 | Target | Installed artifacts |
 |---|---|
 | Codex | `.codex/config.toml`, `.codex/agents/`, `.agents/skills/squad-*/`, `.workflow/` |
-| Claude Code | `.claude/agents/`, merged `.claude/settings.json`, skills and managed `CLAUDE.md` block |
-| OpenCode | `.opencode/agents/`, merged `opencode.json`, skills and managed `AGENTS.md` block |
+| Claude Code | `.claude/agents/`, `.claude/skills/`, merged `.claude/settings.json`, and managed `CLAUDE.md` block |
+| OpenCode | `.opencode/agents/`, `.opencode/commands/`, merged `opencode.json`, skills and managed `AGENTS.md` block |
 | Devin CLI | `.devin/agents/*/AGENT.md`, skills and managed `AGENTS.md` block |
 | VS Code | `.github/agents/` and `.github/skills/` |
 
@@ -103,11 +103,14 @@ The portable workflow commands have the same arguments across runtimes:
 | `squad-review` | Run gates and an independent read-only review |
 | `squad-test` | Author missing tests and run deterministic gates |
 | `squad-debug --diagnose` | Investigate a bug without editing files |
-| `squad-next`, `squad-status`, `squad-resume` | Read or continue a stored run |
+| `squad-finish` | Finalize a verified run after an explicit external-action checkpoint |
+| `squad-status` | Read the stored run, gates, blockers, and next action |
+| `squad-resume`, `squad-next` | Continue a stored run from the recorded next action |
+| `squad-yolo` | Drive a bounded feature through all safe phases with minimal interruptions |
 
-Codex and Devin use skills, Claude Code uses skills/commands, and OpenCode uses
-commands. The syntax varies by runtime; the command name and its state contract
-do not.
+Codex, Devin, and VS Code use the portable skills; Claude Code exposes them as
+project skills (`/squad-*`); OpenCode exposes matching slash commands
+(`/squad-*`). The command name and its state contract do not vary by runtime.
 
 ## Local telemetry
 

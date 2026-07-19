@@ -89,10 +89,10 @@ async function filesIn(root) {
 }
 
 const assetMap = {
-  codex: ['.codex/config.toml', '.codex/agents', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
-  claude: ['.claude/agents', '.claude/settings.json', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
-  opencode: ['.opencode/agents', '.opencode/epic-guide.md', 'opencode.json', '.agents/skills', '.workflow/template'],
-  devin: ['.devin/agents', '.devin/config.json', '.devin/README.md', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
+  codex: ['.codex/config.toml', '.codex/agents', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.agents/skills/squad-debug', '.agents/skills/squad-finish', '.agents/skills/squad-status', '.agents/skills/squad-resume', '.agents/skills/squad-next', '.agents/skills/squad-yolo', '.workflow/template'],
+  claude: ['.claude/agents', '.claude/settings.json', '.claude/skills', '.workflow/template'],
+  opencode: ['.opencode/agents', '.opencode/commands', '.opencode/epic-guide.md', 'opencode.json', '.agents/skills', '.workflow/template'],
+  devin: ['.devin/agents', '.devin/config.json', '.devin/README.md', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.agents/skills/squad-debug', '.agents/skills/squad-finish', '.agents/skills/squad-status', '.agents/skills/squad-resume', '.agents/skills/squad-next', '.agents/skills/squad-yolo', '.workflow/template'],
   vscode: ['.github/agents', '.github/skills'],
 };
 const jsonAssets = new Set(['.claude/settings.json', '.devin/config.json', 'opencode.json']);

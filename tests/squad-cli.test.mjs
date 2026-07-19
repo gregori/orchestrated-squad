@@ -49,6 +49,7 @@ test('all runtime targets install together and preserve resumable workflow state
   try {
     assert.equal(run(dir, 'install', '--target', 'all', '--yes', '--no-init').status, 0);
     for (const artifact of ['.codex/agents', '.claude/agents', '.opencode/agents', '.devin/agents', '.github/agents']) assert.ok((await stat(path.join(dir, artifact))).isDirectory());
+    for (const artifact of ['.claude/skills/squad-yolo/SKILL.md', '.opencode/commands/squad-yolo.md', '.github/skills/squad-status/SKILL.md', '.agents/skills/squad-resume/SKILL.md']) assert.ok((await stat(path.join(dir, artifact))).isFile());
     const { runDir } = await createRun(dir, { runId: 'cross-runtime' });
     assert.equal((await readState(runDir)).run_id, 'cross-runtime');
   } finally { await rm(dir, { recursive: true, force: true }); }
