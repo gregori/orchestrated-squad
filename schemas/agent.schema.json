@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orchestrated-squad.dev/schemas/agent.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "name", "description", "role", "model_class", "write_scope"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "description": { "type": "string", "minLength": 1 },
+    "role": { "enum": ["orchestrator", "specialist", "gate"] },
+    "model_class": { "enum": ["deterministic", "economy", "standard", "premium"] },
+    "write_scope": { "enum": ["none", "scoped", "workspace"] },
+    "capabilities": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "profiles": {
+    "product-manager": { "model": "swe-1.6", "fallback": "swe", "execution_mode": "background", "write_scope": "none" },
+    "requirements-reviewer": { "model": "swe-1.6", "fallback": "swe", "execution_mode": "background", "write_scope": "none" },
+    "tech-analyst": { "model": "swe-1.7", "fallback": "swe", "execution_mode": "background", "write_scope": "none" },
+    "doc-writer": { "model": "swe-1.6", "fallback": "swe", "execution_mode": "foreground", "write_scope": "scoped" },
+    "implementer": { "model": "swe-1.7", "fallback": "swe", "execution_mode": "foreground", "write_scope": "scoped" },
+    "sre": { "model": "swe-1.7", "fallback": "swe", "execution_mode": "foreground", "write_scope": "scoped" },
+    "reviewer": { "model": "swe-1.7", "fallback": "swe", "execution_mode": "background", "write_scope": "none" },
+    "test-author": { "model": "swe-1.7", "fallback": "swe", "execution_mode": "foreground", "write_scope": "scoped" },
+    "bug-triager": { "model": "swe-1.6", "fallback": "swe", "execution_mode": "background", "write_scope": "none" }
+  }
+}

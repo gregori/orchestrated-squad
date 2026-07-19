@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "id": "squad-feature",
+  "phases": ["initialized", "requirements", "requirements_review", "design", "planned", "implementation", "deterministic_checks", "review", "verification", "ready_to_finish", "complete", "blocked"],
+  "max_cycles": 2,
+  "entrypoints": ["squad-feature", "squad-plan", "squad-execute"]
+}

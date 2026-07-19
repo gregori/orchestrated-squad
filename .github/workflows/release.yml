@@ -1,0 +1,31 @@
+name: npm release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install --package-lock=false --ignore-scripts
+      - run: npm run lint && npm test
+      - run: npm pack --json
+      - name: Smoke-test the packed tarball
+        run: |
+          archive=$(node -p "require('./package.json').name.replace('@', '').replace('/', '-') + '-' + require('./package.json').version + '.tgz'")
+          mkdir fixture
+          (cd fixture && npm install --ignore-scripts "../$archive" && npx --no-install squad list && npx --no-install squad install --target codex --yes --no-init)
+      - name: Publish public package with provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance

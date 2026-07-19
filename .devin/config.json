@@ -1,23 +1,11 @@
 {
-  "agent": {
-    "model": "sonnet"
-  },
-  "permissions": {
-    "allow": [
-      "Read(**)",
-      "Edit(**)",
-      "Exec(git)",
-      "Exec(gh)",
-      "Exec(npm run *)",
-      "Exec(npx *)",
-      "Exec(python *)",
-      "Exec(pytest *)",
-      "Exec(ruff *)"
-    ],
-    "deny": [
-      "Exec(sudo *)",
-      "Exec(rm -rf *)",
-      "Exec(del /F *)"
-    ]
+  "schema_version": "1.0",
+  "profiles_directory": ".devin/agents",
+  "skills_directory": ".agents/skills",
+  "capability_probe": "devin --version",
+  "model_policy": {
+    "simple_or_read_only": "swe-1.6",
+    "code_or_critical_analysis": "swe-1.7",
+    "fallback": "swe"
   }
 }

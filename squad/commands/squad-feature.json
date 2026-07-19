@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "command": "squad-feature",
+  "workflow": "squad-feature",
+  "description": "Refine and execute a feature through resumable workflow state.",
+  "gates": ["lint", "test", "git-status"]
+}

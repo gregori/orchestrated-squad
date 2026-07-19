@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "command": "squad-plan",
+  "workflow": "squad-feature",
+  "description": "Refine requirements and create a plan without modifying application code.",
+  "gates": ["git-status"]
+}

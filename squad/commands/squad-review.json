@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "command": "squad-review",
+  "workflow": "squad-feature",
+  "description": "Run deterministic gates before an independent review.",
+  "gates": ["lint", "test", "git-status"]
+}

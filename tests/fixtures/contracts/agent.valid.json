@@ -1,0 +1,1 @@
+{"schema_version":"1.0","name":"implementer","description":"Writes scoped changes.","role":"specialist","model_class":"standard","write_scope":"scoped","capabilities":["edit"]}

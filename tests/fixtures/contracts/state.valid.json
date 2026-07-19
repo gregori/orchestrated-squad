@@ -1,0 +1,1 @@
+{"schema_version":"1.0","run_id":"run-001","workflow":"squad-feature","status":"active","phase":"implementation","next_action":"run tests","cycle":0,"max_cycles":2,"updated_at":"2026-07-19T00:00:00Z","artifacts":{"plan":"plan.md"},"reservations":{"implementer":["src/"]}}

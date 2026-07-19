@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "command": "squad-test",
+  "workflow": "squad-feature",
+  "description": "Run the deterministic test-runner; test creation is delegated only when needed.",
+  "gates": ["test"]
+}

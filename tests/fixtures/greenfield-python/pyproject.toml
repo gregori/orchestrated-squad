@@ -1,0 +1,6 @@
+[project]
+name = "squad-greenfield-python"
+requires-python = ">=3.12"
+
+[tool.pyright]
+typeCheckingMode = "strict"

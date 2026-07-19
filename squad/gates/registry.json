@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "gates": {
+    "lint": { "role_alias": "linter", "command_key": "lint" },
+    "test": { "role_alias": "test-runner", "command_key": "test" },
+    "git-status": { "role_alias": "finisher", "command": "git status --short" },
+    "work-item-publisher": { "role_alias": "issue-creator", "script": "scripts/work-item-publisher.mjs" },
+    "git-pr": { "role_alias": "finisher", "script": "scripts/git-pr.mjs" }
+  }
+}

@@ -1,54 +1,17 @@
-# orchestrated-squad for Devin CLI
+# Devin target
 
-This directory enables Devin CLI to run the orchestrated-squad workflow autonomously through 13 specialized skills.
+The Devin target has two distinct integration surfaces:
 
-## Setup
+- `.devin/agents/<name>/AGENT.md` contains optional custom specialist profiles.
+- `.agents/skills/squad-*/SKILL.md` contains portable command procedures,
+  invoked as `@skills:squad-feature` (or another `squad-*` command).
 
-1. **Install the squad into your project:**
-   ```bash
-   ./install.sh /path/to/your-project --target devin
-   ```
-   This copies `.devin/` and swaps `AGENTS.md` at the project root.
+The installer preserves an existing project `AGENTS.md` and inserts only the
+delimited block from `managed-agents-block.md`. It never backs up or replaces
+the whole file. The root session orchestrates profiles and records all state in
+`.workflow/`.
 
-2. **Switch back to opencode when needed:**
-   ```bash
-   ./install.sh /path/to/your-project --target opencode
-   ```
-   Restores the original `AGENTS.md` from backup.
-
-## How It Works
-
-- `.devin/AGENTS.md` is the orchestrator — copied to project root by the install script
-- `.devin/skills/<name>/SKILL.md` are 13 specialized skills (subagents)
-- Devin CLI reads root `AGENTS.md` and follows the phases, invoking skills autonomously
-
-## Skills
-
-| Skill | Model | Role |
-|-------|-------|------|
-| /planner | sonnet | Pure orchestrator |
-| /product-manager | sonnet | Interview user, refine requirements |
-| /requirements-reviewer | sonnet | Validate requirements |
-| /doc-writer | sonnet | PRD, stories, ADRs, changelog |
-| /tech-analyst | sonnet | Architecture + task breakdown |
-| /issue-creator | haiku | Create GitHub Issues |
-| /implementer | sonnet | Code + unit tests |
-| /sre | sonnet | Infrastructure (Terraform, K8s) |
-| /reviewer | sonnet | Code + security review |
-| /linter | haiku | Lint check (report only) |
-| /tester | haiku | Run + implement tests |
-| /bug-triager | sonnet | Triage and route bugs |
-| /finisher | sonnet | Commit + PR + release notes |
-
-## Converting External Skills
-
-To use community skills (e.g., python-code-style, terraform-engineer) with Devin CLI:
-
-```bash
-.devin/bin/convert-opencode-skill.sh .agents/skills/python-code-style
-# → .devin/skills/python-code-style/SKILL.md
-```
-
-## Workflow
-
-See `.devin/AGENTS.md` for the full 7-phase workflow. Devin CLI follows it autonomously.
+Profile model policy: SWE-1.6 is used for simple or read-only work; SWE-1.7 is
+used for code and critical analysis. Every profile declares `fallback-model:
+swe`; availability is checked by the installer/doctor capability probe rather
+than assumed.

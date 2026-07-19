@@ -1,0 +1,1 @@
+{"name":"squad-node-fixture","private":true,"scripts":{"lint":"node --check index.js","test":"node --test"}}

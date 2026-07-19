@@ -1,0 +1,16 @@
+version: 1.0
+classes:
+  deterministic: { llm: false }
+  economy: { llm: true }
+  standard: { llm: true }
+  premium: { llm: true }
+roles:
+  product-manager: standard
+  requirements-reviewer: standard
+  tech-analyst: premium
+  doc-writer: economy
+  implementer: standard
+  sre: premium
+  reviewer: premium
+  test-author: standard
+  bug-triager: standard

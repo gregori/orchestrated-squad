@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://orchestrated-squad.dev/schemas/result.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "agent", "outcome", "summary", "evidence", "next_action"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "agent": { "type": "string", "minLength": 1 },
+    "outcome": { "enum": ["success", "blocked", "failed"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "evidence": { "type": "array", "items": { "type": "object", "required": ["command", "exit_code"], "properties": { "command": { "type": "string" }, "exit_code": { "type": "integer" } } } },
+    "artifacts": { "type": "array", "items": { "type": "string" } },
+    "next_action": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "generated_from": "squad/agents/registry.json",
+  "agents": [
+    {
+      "name": "bug-triager",
+      "model_class": "standard",
+      "write_scope": "none"
+    },
+    {
+      "name": "doc-writer",
+      "model_class": "economy",
+      "write_scope": "scoped"
+    },
+    {
+      "name": "implementer",
+      "model_class": "standard",
+      "write_scope": "scoped"
+    },
+    {
+      "name": "product-manager",
+      "model_class": "standard",
+      "write_scope": "none"
+    },
+    {
+      "name": "requirements-reviewer",
+      "model_class": "standard",
+      "write_scope": "none"
+    },
+    {
+      "name": "reviewer",
+      "model_class": "premium",
+      "write_scope": "none"
+    },
+    {
+      "name": "sre",
+      "model_class": "premium",
+      "write_scope": "scoped"
+    },
+    {
+      "name": "tech-analyst",
+      "model_class": "premium",
+      "write_scope": "none"
+    },
+    {
+      "name": "test-author",
+      "model_class": "standard",
+      "write_scope": "scoped"
+    }
+  ]
+}

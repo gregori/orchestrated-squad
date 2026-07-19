@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "agents": [
+    { "schema_version": "1.0", "name": "product-manager", "description": "Refines requirements through root checkpoints.", "role": "specialist", "model_class": "standard", "write_scope": "none" },
+    { "schema_version": "1.0", "name": "requirements-reviewer", "description": "Reviews requirements read-only.", "role": "specialist", "model_class": "standard", "write_scope": "none" },
+    { "schema_version": "1.0", "name": "tech-analyst", "description": "Performs architecture analysis read-only.", "role": "specialist", "model_class": "premium", "write_scope": "none" },
+    { "schema_version": "1.0", "name": "doc-writer", "description": "Creates approved derived documentation.", "role": "specialist", "model_class": "economy", "write_scope": "scoped" },
+    { "schema_version": "1.0", "name": "implementer", "description": "Implements a bounded task and unit tests.", "role": "specialist", "model_class": "standard", "write_scope": "scoped" },
+    { "schema_version": "1.0", "name": "sre", "description": "Implements bounded infrastructure changes.", "role": "specialist", "model_class": "premium", "write_scope": "scoped" },
+    { "schema_version": "1.0", "name": "reviewer", "description": "Reviews correctness and security read-only.", "role": "specialist", "model_class": "premium", "write_scope": "none" },
+    { "schema_version": "1.0", "name": "test-author", "description": "Authors missing tests for a bounded change.", "role": "specialist", "model_class": "standard", "write_scope": "scoped" },
+    { "schema_version": "1.0", "name": "bug-triager", "description": "Diagnoses reproducible bugs before repair.", "role": "specialist", "model_class": "standard", "write_scope": "none" }
+  ]
+}
