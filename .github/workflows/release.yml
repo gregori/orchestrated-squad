@@ -19,11 +19,11 @@ jobs:
           registry-url: https://registry.npmjs.org
       - run: npm install --package-lock=false --ignore-scripts
       - run: npm run lint && npm test
-      - run: mkdir packed && npm pack --pack-destination packed --json
+      - run: npm pack --pack-destination "$RUNNER_TEMP" --json
       - name: Smoke-test the packed tarball
         run: |
           archive=$(node -p "require('./package.json').name.replace('@', '').replace('/', '-') + '-' + require('./package.json').version + '.tgz'")
           mkdir fixture
-          (cd fixture && npm install --ignore-scripts "../packed/$archive" && npx --no-install squad list && npx --no-install squad install --target codex --yes --no-init)
+          (cd fixture && npm install --ignore-scripts "$RUNNER_TEMP/$archive" && npx --no-install squad list && npx --no-install squad install --target codex --yes --no-init)
       - name: Publish public package with provenance
         run: npm publish --access public --provenance
