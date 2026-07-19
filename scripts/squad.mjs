@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { createInterface } from 'node:readline/promises';
 import path from 'node:path';
 import process from 'node:process';
-import { contributionPreview, disableTelemetry, exportTelemetry, purgeTelemetry } from './telemetry.mjs';
+import { contributeTelemetry, contributionPreview, disableTelemetry, exportTelemetry, purgeTelemetry } from './telemetry.mjs';
 import { discoverProject } from './project-discovery.mjs';
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -25,11 +25,12 @@ Commands:
   uninstall     Remove only files recorded in the install manifest
   doctor        Check Node, target assets and local squad configuration
   list          List supported targets
-  telemetry     Local telemetry: export, purge, disable or contribute preview
+  telemetry     Local telemetry: export, purge, disable or contribute through a PR
 
 Options:
   --dir <path>       Project directory (default: current directory)
   --target <name>    ${targets.join('|')}|all
+  --repo <owner/name> Metrics repository for telemetry contribution
   --yes              Do not ask for installation confirmation
   --no-init          Do not run the local squad initialization scaffold
   --dry-run          Report changes without writing
@@ -52,6 +53,8 @@ function parseArgs(values) {
     else if (value === '--yes') args.yes = true;
     else if (value === '--output') args.output = path.resolve(values[++index] ?? '');
     else if (value.startsWith('--output=')) args.output = path.resolve(value.slice(9));
+    else if (value === '--repo') args.repository = values[++index];
+    else if (value.startsWith('--repo=')) args.repository = value.slice(7);
     else if (value === '--no-init') args.init = false;
     else if (value === '--dry-run') args.dryRun = true;
     else if (value === '--force') args.force = true;
@@ -86,10 +89,10 @@ async function filesIn(root) {
 }
 
 const assetMap = {
-  codex: ['.codex/config.toml', '.codex/agents', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
-  claude: ['.claude/agents', '.claude/settings.json', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
+  codex: ['.codex/config.toml', '.codex/agents', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
+  claude: ['.claude/agents', '.claude/settings.json', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
   opencode: ['.opencode/agents', '.opencode/epic-guide.md', 'opencode.json', '.agents/skills', '.workflow/template'],
-  devin: ['.devin/agents', '.devin/config.json', '.devin/README.md', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
+  devin: ['.devin/agents', '.devin/config.json', '.devin/README.md', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.workflow/template'],
   vscode: ['.github/agents', '.github/skills'],
 };
 const jsonAssets = new Set(['.claude/settings.json', '.devin/config.json', 'opencode.json']);
@@ -253,7 +256,7 @@ async function main() {
   if (args.command === 'list') return console.log(targets.join('\n'));
   if (args.command === 'telemetry') {
     const action = args.telemetryAction ?? 'export';
-    const result = action === 'purge' ? await purgeTelemetry(args.dir) : action === 'disable' ? await disableTelemetry(args.dir) : action === 'contribute' ? await contributionPreview(args.dir) : await exportTelemetry(args.dir, args.output);
+    const result = action === 'purge' ? await purgeTelemetry(args.dir) : action === 'disable' ? await disableTelemetry(args.dir) : action === 'contribute' ? (args.dryRun ? { ...(await contributionPreview(args.dir)), dry_run: true } : await contributeTelemetry(args.dir, { repository: args.repository })) : await exportTelemetry(args.dir, args.output);
     if (action === 'contribute' && args.output) await writeFile(args.output, `${JSON.stringify(result, null, 2)}\n`);
     return console.log(JSON.stringify(result ?? { action }, null, 2));
   }

@@ -18,8 +18,8 @@ npx @gregori/orchestrated-squad@latest
 For reproducible automation, pin the package version and choose a target:
 
 ```bash
-npx @gregori/orchestrated-squad@0.6.1 install --target codex --yes
-npx @gregori/orchestrated-squad@0.6.1 install --target all --yes
+npx @gregori/orchestrated-squad@latest install --target codex --yes
+npx @gregori/orchestrated-squad@latest install --target all --yes
 ```
 
 The default installation initializes `.squad/config.yaml`, `.workflow/`, and a
@@ -116,8 +116,11 @@ metadata such as duration, runtime, model class, gate outcome, and tokens/cost
 when exposed. It never records prompts, diffs, file contents, secrets, branch
 names, repository names, or absolute paths.
 
-`squad telemetry contribute` only creates a sanitized preview after at least
-five runs. It does not upload anything.
+`squad telemetry contribute` opens a pull request with a sanitized aggregate
+payload after at least five runs. The default upstream is
+[`gregori/orchestrated-squad-metrics`](https://github.com/gregori/orchestrated-squad-metrics);
+use `--repo owner/name` to select another repository. It requires authenticated
+GitHub CLI access and preserves maintainer review before any merge.
 
 ## Development
 

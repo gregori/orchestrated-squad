@@ -17,6 +17,7 @@ test('install is idempotent and records only installed files', async () => {
     assert.equal(run(dir, 'install', '--target', 'codex', '--yes').status, 0);
     const manifest = JSON.parse(await readFile(path.join(dir, '.squad', 'install-manifest.json')));
     assert.ok(manifest.files['.codex/config.toml']);
+    assert.ok(await stat(path.join(dir, '.agents', 'skills', 'squad-init', 'SKILL.md')));
     assert.match(await readFile(path.join(dir, 'AGENTS.md'), 'utf8'), /orchestrated-squad:codex:start/);
     assert.equal(run(dir, 'install', '--target', 'codex', '--yes').status, 0);
     assert.ok(await readFile(path.join(dir, '.squad', 'config.yaml'), 'utf8'));
