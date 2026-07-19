@@ -1,6 +1,6 @@
 # Agent Guidelines for orchestrated-squad
 
-Supported targets: **opencode** · **VS Code Copilot Chat** · **Devin CLI** · **Claude Code**
+Supported targets: **Codex** · **Claude Code** · **OpenCode** · **Devin CLI** · **VS Code Copilot Chat**
 
 ## Workflow Overview
 
@@ -40,21 +40,20 @@ Every agent **must** use the handoff skill before transitioning to the next agen
 
 ## Agent List
 
-| Agent | Model | Temp | Role |
-|-------|-------|------|------|
-| planner | qwen3.6-plus | 0.2 | Pure orchestrator (epic + stories) |
-| product-manager | qwen3.6-plus | 0.3 | Interview user, refine requirements |
-| requirements-reviewer | deepseek-v4-pro | 0.05 | Validate requirements clarity |
-| doc-writer | kimi-k2.6 | 0.2 | Write PRD, stories, ADRs, changelog |
-| tech-analyst | qwen3.6-plus | 0.15 | Architecture + autocrítica + task breakdown |
-| issue-creator | minimax-m2.5 | 0.0 | Create GitHub Issues from tasks |
-| implementer | glm-5.1 | 0.1 | Code + unit tests |
-| sre | deepseek-v4-pro | 0.1 | Infrastructure + Terraform |
-| reviewer | deepseek-v4-pro | 0.05 | Code review + security review (duplo) |
-| linter | minimax-m2.5 | 0.0 | Lint check (report only) |
-| tester | minimax-m2.7 | 0.0 | Test + e2e implementation |
-| bug-triager | deepseek-v4-pro | 0.15 | Triage + route bugs |
-| finisher | kimi-k2.6 | 0.2 | Commit + PR + release notes |
+| Role | Model class | Runtime behavior |
+|------|-------------|------------------|
+| planner | standard | Root-session workflow orchestration |
+| product-manager, requirements-reviewer, bug-triager | standard → premium | Scoped requirements and diagnosis; promote on ambiguity |
+| tech-analyst, sre, reviewer | premium | Architecture, infrastructure and critical review |
+| implementer, test-author | standard → premium | Bounded code and test changes |
+| doc-writer, release notes | economy | Derived, structured documentation |
+| linter, test-runner, mechanical finisher | deterministic | Scripts and gates; no LLM session |
+| issue publisher | deterministic | Adapter behind explicit external-action checkpoint |
+
+Model IDs are resolved from `squad/models.yaml` at install/runtime and checked
+by `squad doctor`. Do not add provider prices, legacy IDs, or account-specific
+availability to this file. Claude Code supports `haiku`, `sonnet`, and `opus`
+aliases; OpenCode models are selected from the configured provider catalog.
 
 ## Writing Rules
 - Keep entries short and structured

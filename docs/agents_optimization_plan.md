@@ -1,9 +1,14 @@
 # Plano de otimização e portabilidade da squad
 
-**Status:** proposto  
-**Data:** 18 de julho de 2026  
+**Status:** implemented baseline; maintained as an architecture record
+**Data:** 18 de julho de 2026; documentation policy refreshed 19 de julho de 2026
 **Plataformas:** Codex, Claude Code, OpenCode e Devin CLI  
 **Entrada principal:** `relatorio_otimizacao_coding_agents.md`
+
+> **Nota de atualidade:** IDs, preços, disponibilidade de conta e versões de
+> runtime mudam frequentemente e não são contratos deste documento. A fonte
+> operacional é `squad/models.yaml`, os renderers e `squad doctor`; use os
+> links oficiais na seção 16 antes de piná-los em uma release.
 
 ## 1. Objetivo e critérios de sucesso
 
@@ -128,13 +133,13 @@ Nos seletores de subagentes, expor somente especialistas que realmente iniciam s
 
 Política: em cada release da squad, testar a versão estável corrente e a linha minor imediatamente anterior. O `doctor` reprova versão abaixo do piso e usa capability probes para recursos experimentais.
 
-| Runtime | Estável observada em 19/07/2026 | Piso inicial | Observação |
-|---|---:|---:|---|
-| Codex CLI | 0.144.6 | 0.143.0 | Luna confirmada na conta alvo; manter gate para outras contas |
-| Claude Code | 2.1.215 | 2.0.0 | Haiku confirmada na conta alvo; validar formato de subagente |
-| OpenCode | 1.18.3 | 1.17.0 | validar agents, commands e schema de configuração |
-| Devin CLI | canal estável atual | estável anterior | histórico SemVer público insuficiente; resolver por `--version` e probes de custom agents/SWE-1.7 |
-| VS Code | 1.129.1 | 1.128.0 | target secundário, mas gerado e testado pela mesma fonte |
+| Runtime | Validação na release | Observação |
+|---|---|---|
+| Codex CLI | versão estável atual e minor anterior | validar configuração, profundidade, sandbox e modelos disponíveis |
+| Claude Code | versão estável atual e minor anterior | validar frontmatter, `Agent` e aliases disponíveis |
+| OpenCode | versão estável atual e minor anterior | validar schema, agents, commands e catálogo selecionado via `/models` |
+| Devin CLI | canal estável atual e anterior quando exposto | validar `AGENT.md`, foreground/background e capability probes |
+| VS Code | versão estável atual e minor anterior | target secundário, gerado e testado pela mesma fonte |
 
 Esses pisos são recalculados em cada major/minor da squad, não ficam congelados indefinidamente.
 
@@ -625,14 +630,13 @@ Medir por run/runtime:
 ## 16. Fontes consultadas
 
 - [Relatório local de otimização](../relatorio_otimizacao_coding_agents.md)
-- [Codex — Subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents?surface=app)
-- [Codex — Models](https://learn.chatgpt.com/docs/models?surface=app)
+- [Codex CLI](https://help.openai.com/en/articles/11096431)
 - [Claude Code — Subagents](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code — Skills e commands](https://code.claude.com/docs/en/slash-commands)
 - [OpenCode — Agents](https://opencode.ai/docs/agents/)
 - [OpenCode — Commands](https://opencode.ai/docs/commands/)
-- [Models.dev — OpenCode Go](https://models.dev/providers/opencode-go/)
-- [Kimi K2.7 Code](https://www.kimi.com/resources/kimi-k2-7-code)
+- [OpenCode — Models](https://opencode.ai/docs/models/)
+- [OpenCode — Providers](https://opencode.ai/docs/providers/)
 - [Devin CLI — Subagents](https://docs.devin.ai/cli/subagents)
 - [Devin CLI — Models](https://docs.devin.ai/cli/models)
 - [Codex CLI — Releases](https://github.com/openai/codex/releases)

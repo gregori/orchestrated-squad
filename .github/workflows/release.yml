@@ -26,6 +26,4 @@ jobs:
           mkdir fixture
           (cd fixture && npm install --ignore-scripts "../$archive" && npx --no-install squad list && npx --no-install squad install --target codex --yes --no-init)
       - name: Publish public package with provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance

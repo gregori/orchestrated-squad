@@ -4,6 +4,11 @@
 **Escopo:** assinaturas individuais ChatGPT Plus, Claude Pro e OpenCode Go padrão.  
 **Objetivo:** otimizar cada assinatura independentemente para uma squad agêntica de engenharia de software com aproximadamente 13 agentes, sem eleger vencedor geral.
 
+> **Arquivo histórico:** este relatório preserva a pesquisa de 12 de julho de
+> 2026. Não use seus IDs de modelo, preços, limites ou disponibilidade como
+> configuração de runtime. A política operacional atual está em
+> `squad/models.yaml`; confirme catálogos e versões no runtime com `squad doctor`.
+
 > **Nota de confiabilidade:** preços, modelos e limites explicitamente publicados são tratados como fatos. Volume mensal de features, stories e epics é necessariamente uma estimativa, porque OpenAI e Anthropic não publicam uma franquia mensal fixa equivalente a tokens ou dólares para esses planos. Nesses casos, são apresentados intervalos conservador, provável e otimista.
 
 ---
