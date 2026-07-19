@@ -1,7 +1,11 @@
 {
   "name": "@gregori/orchestrated-squad",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Portable multi-runtime agent squad installer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gregori/orchestrated-squad.git"
+  },
   "type": "module",
   "engines": { "node": "^22 || ^24" },
   "bin": { "squad": "bin/squad.mjs" },
