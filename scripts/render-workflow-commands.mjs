@@ -29,7 +29,7 @@ export async function renderWorkflowCommands() {
         await mkdir(directory, { recursive: true });
         await writeFile(path.join(directory, 'SKILL.md'), skill);
       } else {
-        await writeFile(path.join(target.directory, `${name}.md`), `---\ndescription: ${descriptionOf(skill, name)}\n---\n\n${bodyOf(skill)}`);
+        await writeFile(path.join(target.directory, `${name}.md`), `---\ndescription: ${descriptionOf(skill, name)}\nagent: planner\nsubtask: false\n---\n\n${bodyOf(skill)}`);
       }
     }
   }

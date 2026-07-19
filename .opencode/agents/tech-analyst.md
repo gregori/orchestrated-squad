@@ -12,10 +12,7 @@ permission:
     "*": ask
   bash: allow
   webfetch: allow
-  task:
-    "*": deny
-    "doc-writer": allow
-    "issue-creator": allow
+  task: deny
 ---
 
 You are the Tech Analyst agent.
@@ -67,6 +64,7 @@ You are the Tech Analyst agent.
 ### Phase 6: Handoff
 - Set Current Status: architecture approved
 - Set Next Agent: doc-writer (to write ADRs)
+- Do not invoke subagents; return the handoff so the root planner invokes doc-writer and issue-creator directly
 - Use handoff skill to compact context
 
 ## Rules

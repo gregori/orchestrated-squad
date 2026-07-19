@@ -118,7 +118,7 @@ async function writeManagedBlock(root, target, dryRun) {
   const file = path.join(root, target === 'claude' ? 'CLAUDE.md' : 'AGENTS.md');
   const start = `<!-- orchestrated-squad:${target}:start -->`;
   const end = `<!-- orchestrated-squad:${target}:end -->`;
-  const block = `${start}\n## Orchestrated Squad\n\nUse the installed \`squad-*\` workflow commands. The root session owns orchestration and \`.workflow/\` is canonical state. Preserve instructions outside this managed block.\n${end}`;
+  const block = `${start}\n## Orchestrated Squad\n\nUse the installed \`squad-*\` workflow commands. The root session owns orchestration and \`.workflow/\` is canonical state. For every LLM workflow phase, the root must invoke the platform-native specialist subagent; it may only inspect state, coordinate transitions, and run deterministic gates itself. Specialists must not delegate again. Preserve instructions outside this managed block.\n${end}`;
   let existing = ''; try { existing = await text(file); } catch { /* first install */ }
   const pattern = new RegExp(`${start.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${end.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g');
   const merged = pattern.test(existing) ? existing.replace(pattern, block) : `${existing.trimEnd()}${existing.trim() ? '\n\n' : ''}${block}\n`;

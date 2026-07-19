@@ -1,5 +1,7 @@
 ---
 description: Show the current resumable squad run, its phase, gates, blockers, and next action.
+agent: planner
+subtask: false
 ---
 
 
