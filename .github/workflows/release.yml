@@ -9,7 +9,7 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,5 +25,14 @@ jobs:
           archive=$(node -p "require('./package.json').name.replace('@', '').replace('/', '-') + '-' + require('./package.json').version + '.tgz'")
           mkdir fixture
           (cd fixture && npm install --ignore-scripts "$RUNNER_TEMP/$archive" && npx --no-install squad list && npx --no-install squad install --target codex --yes --no-init)
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
       - name: Publish public package with provenance
         run: npm publish --access public --provenance
