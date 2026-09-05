@@ -1,7 +1,7 @@
 # orchestrated-squad
 
 Portable orchestration for software-delivery agents across Codex, Claude Code,
-OpenCode, Devin CLI, and VS Code Copilot Chat.
+OpenCode, Devin CLI, VS Code Copilot Chat, and oh-my-pi.
 
 The package installs runtime-native agent definitions and portable workflow
 skills without replacing project instructions. `.workflow/` is the canonical,
@@ -27,7 +27,7 @@ delimited managed block in `AGENTS.md` or `CLAUDE.md`. Use `--no-init` to copy
 only runtime artifacts.
 
 ```text
-squad install   --target codex|claude|opencode|devin|vscode|all
+squad install   --target codex|claude|opencode|devin|vscode|omp|all
 squad update
 squad uninstall
 squad doctor
@@ -71,7 +71,11 @@ Renderers resolve these classes to the models available in each account and
 runtime. `doctor` must reject unavailable choices rather than inventing a
 fallback. Claude Code agent definitions use the documented aliases `haiku`,
 `sonnet`, and `opus`; OpenCode users should select an available provider/model
-through `/models`; Devin profiles use the configured capability probe.
+through `/models`; Devin profiles use the configured capability probe. oh-my-pi
+agents carry provider-qualified fallback chains (economy: `glm-5.3-flash` →
+`gpt-5.6-luna` → `gemini-3.1-flash-lite`; standard: `muse-spark-1.3` →
+`gpt-5.6-terra` → `sonnet-5`; premium: `gpt-5.6-sol` → `sonnet-5` → `opus-5`)
+validated against live account auth.
 
 Do not treat a model name or price in an old issue, README, or plan as a
 runtime guarantee.
@@ -85,6 +89,7 @@ runtime guarantee.
 | OpenCode | `.opencode/agents/`, `.opencode/commands/`, merged `opencode.json`, skills and managed `AGENTS.md` block |
 | Devin CLI | `.devin/agents/*/AGENT.md`, skills and managed `AGENTS.md` block |
 | VS Code | `.github/agents/` and `.github/skills/` |
+| oh-my-pi | `.omp/agents/`, `.omp/commands/`, `.omp/skills/squad-*/` and managed `AGENTS.md` block |
 
 The installer records owned files in `.squad/install-manifest.json`. `update`
 preserves user changes and `uninstall` removes only unchanged, recorded files.

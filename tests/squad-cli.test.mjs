@@ -48,12 +48,15 @@ test('all runtime targets install together and preserve resumable workflow state
   const dir = await temporary();
   try {
     assert.equal(run(dir, 'install', '--target', 'all', '--yes', '--no-init').status, 0);
-    for (const artifact of ['.codex/agents', '.claude/agents', '.opencode/agents', '.devin/agents', '.github/agents']) assert.ok((await stat(path.join(dir, artifact))).isDirectory());
-    for (const artifact of ['.claude/skills/squad-yolo/SKILL.md', '.opencode/commands/squad-yolo.md', '.github/skills/squad-status/SKILL.md', '.agents/skills/squad-resume/SKILL.md']) assert.ok((await stat(path.join(dir, artifact))).isFile());
+    for (const artifact of ['.codex/agents', '.claude/agents', '.opencode/agents', '.devin/agents', '.github/agents', '.omp/agents', '.omp/commands']) assert.ok((await stat(path.join(dir, artifact))).isDirectory());
+    for (const artifact of ['.claude/skills/squad-yolo/SKILL.md', '.opencode/commands/squad-yolo.md', '.github/skills/squad-status/SKILL.md', '.agents/skills/squad-resume/SKILL.md', '.omp/commands/squad-yolo.md', '.omp/skills/squad-status/SKILL.md']) assert.ok((await stat(path.join(dir, artifact))).isFile());
     assert.match(await readFile(path.join(dir, '.claude', 'skills', 'squad-status', 'SKILL.md'), 'utf8'), /no gates have run yet/);
     assert.match(await readFile(path.join(dir, '.claude', 'skills', 'squad-resume', 'SKILL.md'), 'utf8'), /must never perform a specialist phase/);
     assert.match(await readFile(path.join(dir, '.opencode', 'commands', 'squad-resume.md'), 'utf8'), /agent: planner/);
     assert.match(await readFile(path.join(dir, '.opencode', 'agents', 'product-manager.md'), 'utf8'), /task: deny/);
+    assert.match(await readFile(path.join(dir, '.omp', 'agents', 'implementer.md'), 'utf8'), /opencode-go\/muse-spark-1\.3-contributor/);
+    assert.match(await readFile(path.join(dir, '.omp', 'agents', 'implementer.md'), 'utf8'), /spawns: \[\]/);
+    assert.match(await readFile(path.join(dir, '.omp', 'commands', 'squad-plan.md'), 'utf8'), /description: Plan a feature/);
     const { runDir } = await createRun(dir, { runId: 'cross-runtime' });
     assert.equal((await readState(runDir)).run_id, 'cross-runtime');
   } finally { await rm(dir, { recursive: true, force: true }); }

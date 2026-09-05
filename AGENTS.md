@@ -1,6 +1,6 @@
 # Agent Guidelines for orchestrated-squad
 
-Supported targets: **Codex** · **Claude Code** · **OpenCode** · **Devin CLI** · **VS Code Copilot Chat**
+Supported targets: **Codex** · **Claude Code** · **OpenCode** · **Devin CLI** · **VS Code Copilot Chat** · **oh-my-pi**
 
 ## Workflow Overview
 

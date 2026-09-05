@@ -1,7 +1,5 @@
 ---
 description: Execute an approved squad plan with direct Codex specialists and deterministic gates.
-agent: planner
-subtask: false
 ---
 
 

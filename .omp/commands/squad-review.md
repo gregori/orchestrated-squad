@@ -1,7 +1,5 @@
 ---
 description: Run deterministic gates and an independent read-only review.
-agent: planner
-subtask: false
 ---
 
 

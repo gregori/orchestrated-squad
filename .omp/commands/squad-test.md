@@ -1,7 +1,7 @@
 ---
-name: squad-test
 description: Run deterministic tests and optionally author missing tests.
 ---
+
 
 # Squad test
 

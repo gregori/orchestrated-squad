@@ -10,7 +10,7 @@ import { discoverProject } from './project-discovery.mjs';
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packageInfo = JSON.parse(await readFile(path.join(packageRoot, 'package.json'), 'utf8'));
-const targets = ['codex', 'claude', 'opencode', 'devin', 'vscode'];
+const targets = ['codex', 'claude', 'opencode', 'devin', 'vscode', 'omp'];
 const manifestPath = (root) => path.join(root, '.squad', 'install-manifest.json');
 const configPath = (root) => path.join(root, '.squad', 'config.yaml');
 const digest = (value) => createHash('sha256').update(value).digest('hex');
@@ -94,6 +94,7 @@ const assetMap = {
   opencode: ['.opencode/agents', '.opencode/commands', '.opencode/epic-guide.md', 'opencode.json', '.agents/skills', '.workflow/template'],
   devin: ['.devin/agents', '.devin/config.json', '.devin/README.md', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.agents/skills/squad-debug', '.agents/skills/squad-finish', '.agents/skills/squad-status', '.agents/skills/squad-resume', '.agents/skills/squad-next', '.agents/skills/squad-yolo', '.workflow/template'],
   vscode: ['.github/agents', '.github/skills'],
+  omp: ['.omp/agents', '.omp/commands', '.omp/skills/squad-init', '.omp/skills/squad-plan', '.omp/skills/squad-feature', '.omp/skills/squad-execute', '.omp/skills/squad-review', '.omp/skills/squad-test', '.omp/skills/squad-debug', '.omp/skills/squad-finish', '.omp/skills/squad-status', '.omp/skills/squad-resume', '.omp/skills/squad-next', '.omp/skills/squad-yolo', '.workflow/template'],
 };
 const jsonAssets = new Set(['.claude/settings.json', '.devin/config.json', 'opencode.json']);
 const tomlAssets = new Set(['.codex/config.toml']);
