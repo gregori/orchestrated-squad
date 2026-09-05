@@ -1,9 +1,7 @@
 ---
-name: squad-yolo
 description: Drive a bounded squad feature through every safe phase with minimal interruptions.
-argument-hint: "<feature request or run-id>"
-disable-model-invocation: true
 ---
+
 
 # Squad yolo
 

@@ -7,7 +7,9 @@ const source = path.join(root, '.agents', 'skills');
 const targets = [
   { directory: path.join(root, '.claude', 'skills'), format: 'skill' },
   { directory: path.join(root, '.github', 'skills'), format: 'skill' },
+  { directory: path.join(root, '.omp', 'skills'), format: 'skill' },
   { directory: path.join(root, '.opencode', 'commands'), format: 'command' },
+  { directory: path.join(root, '.omp', 'commands'), format: 'omp-command' },
 ];
 
 function bodyOf(skill) { return skill.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, ''); }
@@ -28,6 +30,8 @@ export async function renderWorkflowCommands() {
         await rm(directory, { recursive: true, force: true });
         await mkdir(directory, { recursive: true });
         await writeFile(path.join(directory, 'SKILL.md'), skill);
+      } else if (target.format === 'omp-command') {
+        await writeFile(path.join(target.directory, `${name}.md`), `---\ndescription: ${descriptionOf(skill, name)}\n---\n\n${bodyOf(skill)}`);
       } else {
         await writeFile(path.join(target.directory, `${name}.md`), `---\ndescription: ${descriptionOf(skill, name)}\nagent: planner\nsubtask: false\n---\n\n${bodyOf(skill)}`);
       }

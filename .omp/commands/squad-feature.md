@@ -1,7 +1,7 @@
 ---
-name: squad-feature
 description: Execute a bounded feature through direct Codex specialists and deterministic gates.
 ---
+
 
 # Squad feature
 
