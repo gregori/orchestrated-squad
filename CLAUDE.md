@@ -44,6 +44,11 @@ Claude Code custom subagents are `.claude/agents/*.md` with the documented
   `write_scope` reservations.
 - Gates run lint, build, tests and Git without an LLM. External work-item or PR
   actions require an explicit command/checkpoint.
+- Workflow rules live in `squad/workflows/*.json` and are enforced by
+  `transition()` (ADR 0002). New rules become preconditions there; skills must
+  change runs only through `squad state …` / `squad gate …`.
+- After editing `.agents/skills/`, run `node scripts/render-workflow-commands.mjs`
+  to update the other runtimes' copies.
 - Telemetry is local and content-redacted. Never add automatic upload.
 
 ## Verification

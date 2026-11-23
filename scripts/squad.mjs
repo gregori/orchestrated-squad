@@ -7,6 +7,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { contributeTelemetry, contributionPreview, disableTelemetry, exportTelemetry, purgeTelemetry } from './telemetry.mjs';
 import { discoverProject } from './project-discovery.mjs';
+import { RUN_COMMANDS, runCommand, runUsage } from './run-cli.mjs';
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packageInfo = JSON.parse(await readFile(path.join(packageRoot, 'package.json'), 'utf8'));
@@ -17,7 +18,7 @@ const digest = (value) => createHash('sha256').update(value).digest('hex');
 const relative = (root, file) => path.relative(root, file).replaceAll(path.sep, '/');
 
 function usage() {
-  return `Usage: squad [install|update|uninstall|doctor|list|telemetry] [options]
+  return `Usage: squad [install|update|uninstall|doctor|list|telemetry|state|gate] [options]
 
 Commands:
   install       Install artifacts into a project (default when arguments are supplied)
@@ -26,6 +27,8 @@ Commands:
   doctor        Check Node, target assets and local squad configuration
   list          List supported targets
   telemetry     Local telemetry: export, purge, disable or contribute through a PR
+  state         Create, inspect and transition workflow runs (guarded)
+  gate          Run the deterministic gates of a run
 
 Options:
   --dir <path>       Project directory (default: current directory)
@@ -36,7 +39,9 @@ Options:
   --dry-run          Report changes without writing
   --force            Replace changed, squad-owned artifact files
   --version          Print version
-  --help             Print this help`;
+  --help             Print this help
+
+${runUsage()}`;
 }
 
 function parseArgs(values) {
@@ -245,7 +250,14 @@ async function interactiveInstall(args, { selectTarget = true } = {}) {
 }
 
 async function main() {
-  const args = parseArgs(process.argv.slice(2));
+  const raw = process.argv.slice(2);
+  if (RUN_COMMANDS.includes(raw[0])) {
+    const { result, exitCode } = await runCommand(raw[0], raw.slice(1));
+    console.log(JSON.stringify(result, null, 2));
+    process.exitCode = exitCode;
+    return;
+  }
+  const args = parseArgs(raw);
   if (args.version) return console.log(packageInfo.version);
   if (args.help) return console.log(usage());
   if (!args.command) {

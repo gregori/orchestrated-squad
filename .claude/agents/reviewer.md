@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Reviews implementation for correctness AND security (dual checklist). Reports findings only — never fixes issues.
-model: sonnet
+model: opus
 tools:
   - Read
   - Edit

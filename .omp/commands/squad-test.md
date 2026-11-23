@@ -5,19 +5,13 @@ description: Run deterministic tests and optionally author missing tests.
 
 # Squad test
 
-Run the test-runner gate first using gate-runner. Only invoke the platform's tester or test-author directly when a bounded test gap remains; the root must not author tests itself.
-
-## Gate Execution
+Run the gates first. Only invoke the platform's tester or test-author directly when a bounded test gap remains; the root must not author tests itself.
 
 ```bash
-node scripts/gate-runner.mjs \
-  --root . \
-  --run .workflow/runs/<run-id> \
-  --gates test \
-  --command-test "<from-config>"
+squad gate <run-id> --gates test,scope
 ```
 
-- If gate passed → check if test gaps remain, invoke tester only if needed
-- If gate failed → return to implementer with gate evidence
+- If the gates passed → check if test gaps remain; invoke the tester only if needed, after reserving its `write_scope`.
+- If a gate failed → return to the implementer with the gate evidence.
 
-The test specialist may write tests in its scope but does not modify production code without an explicit root instruction.
+`squad` means `npx -y @gregori/orchestrated-squad@latest`. Change the run only through `squad state ...`; never edit `state.json` by hand.
