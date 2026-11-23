@@ -4,17 +4,17 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createRun, reserveFiles, transition } from '../scripts/workflow-state.mjs';
-import { runGate } from '../scripts/workflow-gates.mjs';
+import { runGate } from '../scripts/gate-runner.mjs';
 import { publishWorkItem } from '../scripts/work-item-publisher.mjs';
 
 test('workflow state is versioned and deterministic gates persist structured results', async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'squad-phase1-')); t.after(() => rm(root, { recursive: true, force: true }));
   const { runDir, state } = await createRun(root, { runId: 'run-001' });
   assert.equal(state.schema_version, '1.0');
-  assert.equal((await transition(runDir, { phase: 'deterministic_checks', next_action: 'run lint' })).phase, 'deterministic_checks');
+  assert.equal((await transition(runDir, { phase: 'requirements', next_action: 'collect requirements' })).phase, 'requirements');
   await reserveFiles(runDir, 'implementer', ['src/app.js']);
   await assert.rejects(reserveFiles(runDir, 'sre', ['src/app.js']), /write_scope conflict/);
-  assert.equal((await runGate({ root, runDir, gate: 'lint', command: 'node -e "process.exit(0)"' })).outcome, 'success');
+  assert.equal((await runGate({ root, runDir, gate: 'lint', command: 'node -e "process.exit(0)"' })).outcome, 'passed');
   assert.equal((await runGate({ root, runDir, gate: 'test', command: 'node -e "process.exit(3)"' })).outcome, 'failed');
   const checks = JSON.parse(await readFile(path.join(runDir, 'checks.json'), 'utf8'));
   assert.deepEqual(checks.map((check) => check.evidence[0].exit_code), [0, 3]);

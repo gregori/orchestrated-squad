@@ -7,22 +7,33 @@ subtask: false
 
 # Squad execute
 
-Read the active run state and approved plan. The root assigns direct implementation or SRE children with disjoint `write_scope`; serialize overlapping changes. It must not implement the plan itself. Use workspace-write only for implementation specialists.
+Read the active run state and approved plan (`squad state status <run-id>`). The root assigns direct implementation or SRE children with disjoint `write_scope`, reserving each scope with `squad state reserve` before the writer starts; serialize overlapping changes. It must not implement the plan itself. Use workspace-write only for implementation specialists.
 
-## Deterministic Gates (REQUIRED before reviewer)
+## Run state (guarded)
 
-After implementation, run gates BEFORE invoking reviewer:
+`squad` below means `npx -y @gregori/orchestrated-squad@latest` (or the `squad` binary, if installed). Change a
+run only through it; never edit `.workflow/runs/<run-id>/state.json` by hand.
+
+- `squad state transition <run-id> --to <phase> --next "<next action>"` moves
+  the run. A refusal (exit code 1) lists the reasons: report them and fix the
+  cause instead of retrying. To stop, use `--to blocked --reason "<why>"`.
+- `squad state reserve <run-id> --worker <name> --files <paths>` before a
+  writer starts; `squad state annotate <run-id> --artifact review=<path>` after
+  the independent review is written.
+- `squad state check <run-id> --to <phase>` previews a transition.
+
+## Deterministic gates (REQUIRED before review)
 
 ```bash
-node scripts/gate-runner.mjs \
-  --root . \
-  --run .workflow/runs/<run-id> \
-  --gates lint,test \
-  --command-lint "<from-config-or-skip>" \
-  --command-test "<from-config-or-skip>"
+squad gate <run-id>
 ```
 
-- If gates passed → continue to reviewer
-- If gates failed → return to implementer with gate output evidence
+Commands come from `.squad/config.yaml`, never from the agent. The run always
+includes `test` and `scope` (changed files must be inside the reserved
+`write_scope`); a required gate without a configured command is `blocked`, not
+skipped. Results are appended to `.workflow/runs/<run-id>/checks.json`.
 
-Only invoke reviewer if gates pass. Gates are defined in `.squad/config.yaml` under `gates:` section.
+- Passed → transition to `review` and invoke the reviewer.
+- Failed or blocked → return to the implementer with the gate output, or ask
+  the user to configure the missing gate command. The transition to `review` is
+  refused while any required gate is not passing.

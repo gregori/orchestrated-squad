@@ -1,7 +1,7 @@
 ---
 name: tech-analyst
 description: Defines architecture, tech stack, and task breakdown. Performs self-review (autocrítica) before outputting. Writes plan.md.
-model: sonnet
+model: opus
 tools:
   - Read
   - Edit

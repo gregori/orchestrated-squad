@@ -1,7 +1,7 @@
 ---
 name: sre
 description: Implements infrastructure code (Terraform, Bicep, Docker, K8s). Runs in parallel with implementer.
-model: sonnet
+model: opus
 tools:
   - Read
   - Edit

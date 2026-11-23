@@ -33,6 +33,8 @@ squad uninstall
 squad doctor
 squad list
 squad telemetry export|purge|disable|contribute
+squad state     init|status|check|transition|annotate|reserve|release
+squad gate      <run-id> [--gates lint,test,scope]
 ```
 
 `install.sh` and `install.ps1` are compatibility wrappers over the same Node
@@ -53,6 +55,29 @@ limited to two cycles.
 
 Deterministic gates run lint, builds, tests, Git, and tracker preparation.
 They are not separate LLM agents.
+
+### Run state and gates
+
+The workflow rules are enforced in code, not only in skill prose
+([ADR 0002](docs/adr/0002-guard-de-transicoes.md)):
+
+- `squad/workflows/feature.json` declares the allowed transitions, the
+  preconditions of each phase, the cycle transitions and the required gates.
+- `squad state transition <run-id> --to <phase> --next "<action>"` is the only
+  supported way to change a run. A refused transition exits with code 1 and
+  lists its reasons (for example, a required gate that has not passed since the
+  last implementation, or a missing review record). Refusals are recorded as
+  `transition_refused` events.
+- After `max_cycles` review cycles the run must move to `blocked` with a
+  reason; a blocked run resumes only to the phase where it stopped.
+- `squad gate <run-id>` runs the gates with the commands from
+  `.squad/config.yaml`, never commands chosen by an agent. `test` and `scope`
+  are always required: a required gate without a command is `blocked`, and
+  `scope` fails when a file changed by the run is outside the reserved
+  `write_scope` (files already dirty when the run started count only if they
+  change again).
+
+Skills call the CLI through `npx -y @gregori/orchestrated-squad@latest`.
 
 ## Model policy
 
@@ -139,6 +164,16 @@ npm run validate:contracts
 npm run check:drift
 npm pack --dry-run
 ```
+
+`check:drift` also verifies that `.claude/agents/*.md` declare the alias of
+their canonical model class (`economy → haiku`, `standard → sonnet`,
+`premium → opus`).
+
+## Roadmap
+
+The planned evolution of the workflow (questions gate, acceptance tests,
+fast path, model diversity, metrics, PRs per deliverable slice and dynamic
+model routing) is in [docs/PROPOSTA-EVOLUCAO.md](docs/PROPOSTA-EVOLUCAO.md).
 
 Fixtures under `tests/fixtures/` validate the squad itself. They are not
 included in the npm package and are never copied into installed projects.
