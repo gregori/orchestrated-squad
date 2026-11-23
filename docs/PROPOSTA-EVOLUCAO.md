@@ -35,7 +35,9 @@ O que o código fazia antes:
 | Skills | Chamavam `node scripts/gate-runner.mjs` com comandos escolhidos pelo agente | O script não existe no projeto instalado, e o agente escolhia o comando |
 
 O que mudou está descrito no [ADR 0002](adr/0002-guard-de-transicoes.md) e no
-README (*Run state and gates*).
+README (*Run state and gates*). O [ADR 0003](adr/0003-workflow-de-debug-e-allowlist-de-escrita.md)
+estendeu o guard ao `squad-debug` e acrescentou a allowlist de escrita por
+fase (fases somente leitura só podem alterar `.workflow/`).
 
 ## Mudança 1: gate humano de perguntas em aberto
 

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "id": "squad-debug",
+  "phases": ["initialized", "diagnosis", "diagnosed", "complete", "blocked"],
+  "max_cycles": 2,
+  "entrypoints": ["squad-debug"],
+  "transitions": {
+    "initialized": ["diagnosis"],
+    "diagnosis": ["diagnosed"],
+    "diagnosed": ["diagnosis", "complete"],
+    "complete": []
+  },
+  "preconditions": {
+    "diagnosed": ["diagnosis_recorded"]
+  },
+  "cycle_transitions": [["diagnosed", "diagnosis"]],
+  "write_allowlist": {
+    "diagnosis": [".workflow/"],
+    "diagnosed": [".workflow/"]
+  },
+  "required_gates": []
+}

@@ -27,7 +27,7 @@ async function readJson(file, fallback) {
   try { return JSON.parse(await readFile(file, 'utf8')); } catch { return fallback; }
 }
 
-const workflowFiles = { 'squad-feature': 'feature.json', 'squad-plan': 'feature.json', 'squad-execute': 'feature.json' };
+const workflowFiles = { 'squad-feature': 'feature.json', 'squad-plan': 'feature.json', 'squad-execute': 'feature.json', 'squad-debug': 'debug.json' };
 
 /** Definição do workflow (grafo de fases e pré-condições) ou null se não houver. */
 export async function loadWorkflow(id) {
@@ -44,13 +44,38 @@ export async function fileHash(file) {
   try { return createHash('sha256').update(await readFile(file)).digest('hex'); } catch { return 'missing'; }
 }
 
-/** Arquivos já alterados quando a run começa: o gate de escopo só os cobra se mudarem depois. */
-async function dirtyBaseline(root) {
+/** Arquivos já alterados (em relação a `base`) e seus hashes. `.workflow/` e `.squad/` ficam de fora. */
+async function dirtyBaseline(root, base = null) {
   const { changedFiles } = await import('./scope-check.mjs');
-  const files = changedFiles(root, null) ?? [];
+  const files = changedFiles(root, base) ?? [];
   const baseline = {};
   for (const file of files.slice(0, 5000)) baseline[file] = await fileHash(path.join(root, file));
   return baseline;
+}
+
+const projectRoot = (runDir) => path.resolve(runDir, '..', '..', '..');
+
+/** Foto do repositório ao entrar numa fase com `write_allowlist`. */
+async function phaseEntry(runDir, phase) {
+  const root = projectRoot(runDir);
+  const head = gitHead(root);
+  return { phase, head, dirty: await dirtyBaseline(root, head || null) };
+}
+
+/** Arquivos alterados desde a entrada na fase, comparando com a foto. */
+export async function changedSincePhaseEntry(runDir, entry) {
+  const { changedFiles } = await import('./scope-check.mjs');
+  const root = projectRoot(runDir);
+  const now = changedFiles(root, entry.head || null) ?? [];
+  const candidates = new Set([...now, ...Object.keys(entry.dirty ?? {})]);
+  const changed = [];
+  for (const file of candidates) {
+    const before = entry.dirty?.[file];
+    const current = now.includes(file) ? await fileHash(path.join(root, file)) : null;
+    if (before === undefined && current !== null) changed.push(file); // passou a diferir do HEAD
+    else if (before !== undefined && current !== before) changed.push(file); // mudou ou foi revertido
+  }
+  return changed.sort();
 }
 
 export async function createRun(root, { runId, workflow = 'squad-feature', maxCycles = 2 } = {}) {
@@ -106,6 +131,9 @@ const preconditions = {
   async review_recorded(runDir, state) {
     return state.artifacts?.review ? [] : ['independent review result is not recorded (artifact `review`)'];
   },
+  async diagnosis_recorded(runDir, state) {
+    return state.artifacts?.diagnosis ? [] : ['diagnosis is not recorded (artifact `diagnosis`)'];
+  },
 };
 
 /** Motivos pelos quais `patch` não pode ser aplicado; lista vazia = permitido. */
@@ -123,6 +151,12 @@ export async function checkTransition(runDir, previous, patch) {
   const allowed = workflow.transitions[from] ?? [];
   if (!allowed.includes(to)) return [`'${from}' → '${to}' is not allowed (allowed: ${allowed.join(', ') || 'none'})`];
   const reasons = [];
+  const allowlist = workflow.write_allowlist?.[from];
+  if (allowlist && previous.phase_entry?.phase === from) {
+    const { covered } = await import('./scope-check.mjs');
+    const outside = (await changedSincePhaseEntry(runDir, previous.phase_entry)).filter((file) => !allowlist.some((entry) => covered(file, entry)));
+    if (outside.length) reasons.push(`phase '${from}' may only write ${allowlist.join(', ')}; changed: ${outside.slice(0, 10).join(', ')}${outside.length > 10 ? ' …' : ''}`);
+  }
   const isCycle = (workflow.cycle_transitions ?? []).some(([a, b]) => a === from && b === to);
   if (isCycle && previous.cycle + 1 > previous.max_cycles) {
     reasons.push(`cycle limit reached (${previous.max_cycles}); move the run to 'blocked' with a reason`);
@@ -151,6 +185,12 @@ export async function transition(runDir, patch) {
   if (previous.phase === 'blocked' && to !== 'blocked') { state.status = 'active'; delete state.blocked_from; delete state.blocked_reason; }
   if (to === 'complete') state.status = 'complete';
   if ((workflow?.cycle_transitions ?? []).some(([a, b]) => a === previous.phase && b === to)) state.cycle = previous.cycle + 1;
+  if (to !== previous.phase) {
+    const resuming = previous.phase === 'blocked' && previous.phase_entry?.phase === to;
+    if (resuming || to === 'blocked') { /* mantém a foto da fase interrompida */ }
+    else if (workflow?.write_allowlist?.[to]) state.phase_entry = await phaseEntry(runDir, to);
+    else delete state.phase_entry;
+  }
   await atomicJson(stateFile(runDir), state);
   await appendEvent(runDir, { type: 'state_transition', from: previous.phase, to: state.phase, status: state.status });
   return state;

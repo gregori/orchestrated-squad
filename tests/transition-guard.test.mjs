@@ -146,3 +146,44 @@ test('files already dirty when the run starts are not charged to the run unless 
   assert.equal(result.blocked_by, 'scope');
   assert.match(result.results.at(-1).output, /preexisting\.txt/);
 });
+
+test('squad-debug has its own phase graph and requires a recorded diagnosis', async (t) => {
+  const root = await project(t);
+  const { runDir } = await createRun(root, { runId: 'd1', workflow: 'squad-debug' });
+  await assert.rejects(transition(runDir, { phase: 'complete' }), /not allowed/);
+  await transition(runDir, { phase: 'diagnosis' });
+  await assert.rejects(transition(runDir, { phase: 'diagnosed' }), /diagnosis is not recorded/);
+  await annotate(runDir, { artifacts: { diagnosis: '.workflow/runs/d1/diagnosis.md' } });
+  await writeFile(path.join(runDir, 'diagnosis.md'), 'causa provável\n'); // .workflow/ é permitido
+  await transition(runDir, { phase: 'diagnosed' });
+  assert.equal((await transition(runDir, { phase: 'complete' })).status, 'complete');
+});
+
+test('read-only phases refuse to advance when files outside the allowlist changed', async (t) => {
+  const root = await project(t);
+  await writeFile(path.join(root, 'dirty-before.txt'), 'x\n');
+  const { runDir } = await createRun(root, { runId: 'd2', workflow: 'squad-debug' });
+  await transition(runDir, { phase: 'diagnosis' });
+  await annotate(runDir, { artifacts: { diagnosis: 'd.md' } });
+  await mkdir(path.join(root, 'src'));
+  await writeFile(path.join(root, 'src', 'fix.js'), 'consertei sem pedir\n');
+  await assert.rejects(transition(runDir, { phase: 'diagnosed' }), /may only write \.workflow\/; changed: src\/fix\.js/);
+  // bloquear e voltar não apaga a evidência
+  await transition(runDir, { phase: 'blocked', blocked_reason: 'edição fora do escopo' });
+  await transition(runDir, { phase: 'diagnosis' });
+  await assert.rejects(transition(runDir, { phase: 'diagnosed' }), /src\/fix\.js/);
+  await rm(path.join(root, 'src'), { recursive: true });
+  await transition(runDir, { phase: 'diagnosed' }); // o arquivo sujo de antes não conta
+});
+
+test('the reviewer phase of squad-feature is read-only too', async (t) => {
+  const root = await project(t);
+  const { runDir } = await createRun(root, { runId: 'f1' });
+  await reserveFiles(runDir, 'implementer', ['src/']);
+  await walk(runDir, 'requirements', 'requirements_review', 'design', 'planned', 'implementation', 'deterministic_checks');
+  await runConfiguredGates({ root, runDir });
+  await transition(runDir, { phase: 'review' });
+  await annotate(runDir, { artifacts: { review: 'r.md' } });
+  await writeFile(path.join(root, 'patched-by-reviewer.js'), 'x\n');
+  await assert.rejects(transition(runDir, { phase: 'verification' }), /phase 'review' may only write/);
+});
