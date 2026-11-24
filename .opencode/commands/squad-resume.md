@@ -13,4 +13,4 @@ The invoking session is the root orchestrator. Reading state is its only direct 
 
 Every phase change goes through `squad state transition <run-id> --to <phase> --next "<next action>"`. If it is refused, report the listed reasons and act on them (run the gates, record the review, or block the run); never edit `state.json` to get past a refusal. If the run is blocked, report `blocked_reason` and request only the decision needed to unblock it; a blocked run resumes only to the phase where it stopped.
 
-`squad` means `npx -y @gregori/orchestrated-squad@latest` (or the installed `squad` binary).
+`squad` means `node .squad/bin/squad.mjs` (the local runtime, run from the project root).

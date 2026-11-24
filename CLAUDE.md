@@ -49,6 +49,9 @@ Claude Code custom subagents are `.claude/agents/*.md` with the documented
   change runs only through `squad state …` / `squad gate …`.
 - Read-only specialists (`write_scope: none`) never get write tools; they
   return text and the root runs `squad state record` (ADR 0004).
+- Skills and hooks call the local runtime (`node .squad/bin/squad.mjs`), never
+  `npx`. Runtime scripts must stay dependency-free; add new ones to
+  `runtimeFiles` in `scripts/squad.mjs` (ADR 0005).
 - After editing `.agents/skills/`, run `node scripts/render-workflow-commands.mjs`
   to update the other runtimes' copies.
 - Telemetry is local and content-redacted. Never add automatic upload.

@@ -19,7 +19,7 @@ hooks:
     - matcher: "Edit|Write|MultiEdit|NotebookEdit|Bash"
       hooks:
         - type: command
-          command: "npx -y @gregori/orchestrated-squad@latest hook read-only"
+          command: 'node "${CLAUDE_PROJECT_DIR:-.}/.squad/bin/squad.mjs" hook read-only'
 ---
 
 ## Output contract (read-only)

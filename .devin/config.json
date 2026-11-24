@@ -7,5 +7,19 @@
     "simple_or_read_only": "swe-1.6",
     "code_or_critical_analysis": "swe-1.7",
     "fallback": "swe"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^(write|edit|apply_patch|notebook_edit|exec|write_to_process)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-${DEVIN_PROJECT_DIR:-.}}/.squad/bin/squad.mjs\" hook phase-guard",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
   }
 }

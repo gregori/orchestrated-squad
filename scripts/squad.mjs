@@ -105,7 +105,10 @@ const jsonAssets = new Set(['.claude/settings.json', '.devin/config.json', 'open
 const tomlAssets = new Set(['.codex/config.toml']);
 
 function mergeJson(existing, incoming) {
-  if (Array.isArray(existing) && Array.isArray(incoming)) return [...new Set([...existing, ...incoming])];
+  if (Array.isArray(existing) && Array.isArray(incoming)) {
+    const seen = new Set(existing.map((item) => JSON.stringify(item)));
+    return [...existing, ...incoming.filter((item) => !seen.has(JSON.stringify(item)))];
+  }
   if (existing && incoming && typeof existing === 'object' && typeof incoming === 'object') {
     const merged = { ...existing };
     for (const [key, value] of Object.entries(incoming)) merged[key] = key in merged ? mergeJson(merged[key], value) : value;
@@ -160,6 +163,35 @@ async function installFile(source, root, manifest, options) {
   return existing ? 'updated' : 'created';
 }
 
+// Runtime local: o CLI de estado, gates e hooks, sem dependências, copiado para
+// .squad/bin/ para que skills e hooks rodem com `node .squad/bin/squad.mjs`
+// (sem npx, sem rede, na versão instalada). ADR 0005.
+const runtimeFiles = [
+  ['scripts/runtime.mjs', 'squad.mjs'],
+  ...['run-cli.mjs', 'workflow-state.mjs', 'gate-runner.mjs', 'scope-check.mjs', 'agent-hooks.mjs', 'phase-guard.mjs'].map((file) => [`scripts/${file}`, file]),
+];
+
+async function installRuntime(root, manifest, options) {
+  const changes = [];
+  const workflows = (await readdir(path.join(packageRoot, 'squad', 'workflows'))).filter((file) => file.endsWith('.json'));
+  const pairs = [...runtimeFiles, ...workflows.map((file) => [`squad/workflows/${file}`, `workflows/${file}`])];
+  for (const [source, target] of pairs) {
+    const rel = `.squad/bin/${target}`;
+    const destination = path.join(root, rel);
+    const incoming = await readFile(path.join(packageRoot, source));
+    const existing = await exists(destination) ? await readFile(destination) : null;
+    const installed = manifest.files[rel];
+    if (existing && !options.force && installed && installed.hash !== digest(existing)) { changes.push({ file: rel, result: 'preserved-user-change' }); continue; }
+    if (!options.dryRun) { await mkdir(path.dirname(destination), { recursive: true }); await writeFile(destination, incoming); }
+    manifest.files[rel] = { hash: digest(incoming), target: 'core' };
+    changes.push({ file: rel, result: existing ? (digest(existing) === digest(incoming) ? 'unchanged' : 'updated') : 'created' });
+  }
+  const version = `${packageInfo.version}\n`;
+  if (!options.dryRun) await writeFile(path.join(root, '.squad', 'bin', 'VERSION'), version);
+  manifest.files['.squad/bin/VERSION'] = { hash: digest(version), target: 'core' };
+  return changes;
+}
+
 async function initialize(root, dryRun) {
   const file = configPath(root);
   if (await exists(file)) return false;
@@ -193,6 +225,7 @@ async function install(options, { update = false } = {}) {
     manifest.blocks[`${target}:${block.file}`] = block;
     changes.push({ file: block.file, result: 'managed-block' });
   }
+  changes.push(...await installRuntime(root, manifest, options));
   manifest.schema_version = 1; manifest.package = packageInfo.name; manifest.version = packageInfo.version; manifest.targets = [...new Set([...(manifest.targets ?? []), ...chosen])];
   if (!update && options.init && await initialize(root, options.dryRun)) {
     manifest.files['.squad/config.yaml'] = { hash: digest(await readFile(configPath(root))), target: 'core' };
@@ -234,6 +267,11 @@ async function doctor(options) {
   const checks = [{ name: 'node', ok: major === 22 || major === 24, detail: process.version }];
   for (const target of targets) checks.push({ name: `assets:${target}`, ok: await exists(path.join(packageRoot, assetMap[target][0])), detail: assetMap[target][0] });
   if (await exists(options.dir)) checks.push({ name: 'project', ok: true, detail: path.resolve(options.dir) });
+  if (await exists(manifestPath(options.dir))) {
+    let installed = null;
+    try { installed = (await text(path.join(options.dir, '.squad', 'bin', 'VERSION'))).trim(); } catch { /* ausente */ }
+    checks.push({ name: 'runtime', ok: installed === packageInfo.version, detail: installed ? `.squad/bin ${installed} (package ${packageInfo.version})` : '.squad/bin missing: run squad update' });
+  }
   return checks;
 }
 
@@ -252,9 +290,10 @@ async function interactiveInstall(args, { selectTarget = true } = {}) {
 async function main() {
   const raw = process.argv.slice(2);
   if (RUN_COMMANDS.includes(raw[0])) {
-    const { result, exitCode } = await runCommand(raw[0], raw.slice(1));
+    const { result, exitCode, stderr } = await runCommand(raw[0], raw.slice(1));
     if (raw[0] === 'hook') { if (result) process.stdout.write(`${JSON.stringify(result)}\n`); }
     else console.log(JSON.stringify(result, null, 2));
+    if (stderr) process.stderr.write(`${stderr}\n`);
     process.exitCode = exitCode;
     return;
   }

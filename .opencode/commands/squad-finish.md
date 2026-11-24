@@ -11,4 +11,4 @@ Check the run with `squad state check <run-id> --to ready_to_finish` (or `--to c
 
 Do not create a commit, push, pull request, release, or external tracker item without explicit user approval. Once the approved finalization is complete, persist the evidence and run `squad state transition <run-id> --to complete --next "none"`.
 
-`squad` means `npx -y @gregori/orchestrated-squad@latest`. Never edit `state.json` by hand.
+`squad` means `node .squad/bin/squad.mjs` (the local runtime, run from the project root). Never edit `state.json` by hand.

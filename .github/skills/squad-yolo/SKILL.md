@@ -13,7 +13,7 @@ Advance requirements, review, design, implementation, deterministic checks, inde
 
 ## Run state (guarded)
 
-`squad` below means `npx -y @gregori/orchestrated-squad@latest` (or the `squad` binary, if installed). Change a
+`squad` below means `node .squad/bin/squad.mjs`, the local runtime installed by the squad installer (run it from the project root; no network needed). Change a
 run only through it; never edit `.workflow/runs/<run-id>/state.json` by hand.
 
 - `squad state transition <run-id> --to <phase> --next "<next action>"` moves
