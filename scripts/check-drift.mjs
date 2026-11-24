@@ -51,6 +51,7 @@ export async function readOnlyDrift() {
     }
     const codex = await read(`.codex/agents/${name}.toml`);
     if (codex && !/^sandbox_mode = "read-only"$/m.test(codex)) problems.push(`.codex/agents/${name}.toml: sandbox_mode must be read-only`);
+    if (codex && !codex.includes(HOOK)) problems.push(`.codex/agents/${name}.toml: missing the read-only PreToolUse hook`);
     for (const file of [`.devin/agents/${name}/AGENT.md`, `.omp/agents/${name}.md`]) {
       const fm = frontmatter(await read(file));
       if (fm && /^(allowed-tools|tools):.*\b(edit|write)\b/m.test(fm)) problems.push(`${file}: read-only agent lists a write tool`);

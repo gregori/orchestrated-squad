@@ -16,7 +16,11 @@ const instructions = {
   'bug-triager': 'Diagnose with reproduction evidence, hypotheses, and a bounded likely cause. In diagnose mode, do not edit files. Do not invoke subagents.'
 };
 const quote = (value) => JSON.stringify(value);
+// Hook por agente para especialistas somente leitura (ADR 0004/0005). O Codex
+// carrega o arquivo do agente como camada de configuração; o efeito dentro do
+// subagente ainda precisa ser confirmado em uso real.
+const readOnlyHook = `\n[[hooks.PreToolUse]]\nmatcher = "Bash|apply_patch"\n\n[[hooks.PreToolUse.hooks]]\ntype = "command"\ncommand = 'node "$(git rev-parse --show-toplevel)/.squad/bin/squad.mjs" hook read-only'\ntimeout = 10\n`;
 export async function renderCodexAgents() {
   const { agents } = JSON.parse(await readFile(path.join(root, 'squad', 'agents', 'registry.json'), 'utf8'));
-  return Object.fromEntries(agents.map((agent) => [`${agent.name}.toml`, `# generated_from: squad/agents/registry.json\nname = ${quote(agent.name)}\ndescription = ${quote(agent.description)}\nmodel = ${quote(models[agent.model_class])}\nsandbox_mode = ${quote(agent.write_scope === 'none' ? 'read-only' : 'workspace-write')}\ndeveloper_instructions = \"\"\"\n${instructions[agent.name]}\n\"\"\"\n`]));
+  return Object.fromEntries(agents.map((agent) => [`${agent.name}.toml`, `# generated_from: squad/agents/registry.json\nname = ${quote(agent.name)}\ndescription = ${quote(agent.description)}\nmodel = ${quote(models[agent.model_class])}\nsandbox_mode = ${quote(agent.write_scope === 'none' ? 'read-only' : 'workspace-write')}\ndeveloper_instructions = \"\"\"\n${instructions[agent.name]}\n\"\"\"\n${agent.write_scope === 'none' ? readOnlyHook : ''}`]));
 }
