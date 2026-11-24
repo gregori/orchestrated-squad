@@ -17,4 +17,4 @@ Diagnosis is read-only: `diagnosis` and `diagnosed` may only change files under 
 
 If a fix is requested after diagnosis, close this run (`--to complete`) and hand off the recorded scope to `squad-execute`, which runs under the guarded `squad-feature` phase graph.
 
-`squad` means `npx -y @gregori/orchestrated-squad@latest`. Never edit `state.json` by hand.
+`squad` means `node .squad/bin/squad.mjs` (the local runtime, run from the project root). Never edit `state.json` by hand.

@@ -40,7 +40,10 @@ estendeu o guard ao `squad-debug` e acrescentou a allowlist de escrita por
 fase (fases somente leitura só podem alterar `.workflow/`). O
 [ADR 0004](adr/0004-especialistas-somente-leitura.md) removeu as ferramentas de
 escrita dos especialistas somente leitura em todos os runtimes e acrescentou um
-hook de negação no Claude Code e no VS Code.
+hook de negação no Claude Code e no VS Code. O
+[ADR 0005](adr/0005-runtime-local-e-hooks.md) trocou o `npx` por um runtime
+local em `.squad/bin/` e acrescentou um hook global por fase (Claude Code e
+Devin CLI).
 
 ## Mudança 1: gate humano de perguntas em aberto
 

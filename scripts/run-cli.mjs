@@ -5,6 +5,16 @@ import { annotate, checkTransition, createRun, readState, releaseFiles, reserveF
 
 export const RUN_COMMANDS = ['state', 'gate', 'hook'];
 
+/** Registro mínimo (sem conteúdo) para verificar se os hooks disparam, inclusive em subagentes. */
+async function logHook(kind, raw, outcome) {
+  const { appendFile, mkdir } = await import('node:fs/promises');
+  const { projectDir } = await import('./phase-guard.mjs');
+  let payload = {}; try { payload = JSON.parse(raw); } catch { /* ignora */ }
+  const dir = path.join(projectDir(), '.workflow');
+  await mkdir(dir, { recursive: true });
+  await appendFile(path.join(dir, 'hook-log.jsonl'), `${JSON.stringify({ at: new Date().toISOString(), hook: kind, tool: payload.tool_name ?? payload.toolName ?? null, session: payload.session_id ?? null, agent: payload.agent_type ?? payload.agent_id ?? null, decision: outcome.exitCode === 2 ? 'deny' : 'allow' })}\n`);
+}
+
 async function readStdin() {
   const chunks = [];
   for await (const chunk of process.stdin) chunks.push(chunk);
@@ -26,8 +36,10 @@ export function runUsage() {
 Deterministic gates (commands come from .squad/config.yaml, never from the agent):
   squad gate <run-id> [--gates lint,test,scope]
 
-Agent hooks (deny writes for read-only specialists; reads the hook payload on stdin):
-  squad hook read-only
+Agent hooks (PreToolUse payload on stdin; deny = JSON on stdout, reason on stderr, exit 2):
+  squad hook read-only     per agent: read-only specialists
+  squad hook phase-guard   global: phases with a write_allowlist
+  SQUAD_HOOK_LOG=1 appends one line per call (tool, session, decision) to .workflow/hook-log.jsonl
 
 Common option: --dir <project> (default: current directory)`;
 }
@@ -80,10 +92,20 @@ function requireRun(args) {
 export async function runCommand(command, values) {
   const args = parse(values);
   if (command === 'hook') {
-    const { readOnlyHook } = await import('./agent-hooks.mjs');
-    if (args.positional[0] !== 'read-only') throw new Error('Usage: squad hook read-only');
-    const output = readOnlyHook(await readStdin());
-    return { result: output, exitCode: 0 };
+    const { parsePayload, readOnlyHook, denial } = await import('./agent-hooks.mjs');
+    const kind = args.positional[0];
+    if (!['read-only', 'phase-guard'].includes(kind)) throw new Error('Usage: squad hook read-only|phase-guard');
+    const raw = await readStdin();
+    let outcome;
+    if (kind === 'read-only') outcome = readOnlyHook(raw);
+    else {
+      const { phaseGuardReason } = await import('./phase-guard.mjs');
+      const payload = parsePayload(raw);
+      const reason = payload && await phaseGuardReason(payload);
+      outcome = reason ? denial(`${reason}. Record results with \`squad state record\` instead.`) : { result: null, exitCode: 0 };
+    }
+    if (process.env.SQUAD_HOOK_LOG) await logHook(kind, raw, outcome);
+    return outcome;
   }
   if (command === 'gate') {
     const runId = requireRun(args);

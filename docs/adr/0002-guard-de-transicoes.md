@@ -31,7 +31,8 @@ instalado, com comandos escolhidos pelo próprio agente.
    que já estavam alterados quando a run começou (`baseline`, com hash) só
    contam se mudarem depois.
 5. A CLI `squad state …` / `squad gate …` é o único caminho suportado para
-   mudar uma run. As skills usam `npx -y @gregori/orchestrated-squad@latest`.
+   mudar uma run. (Originalmente via `npx …@latest`; o ADR 0005 trocou pelo
+   runtime local `node .squad/bin/squad.mjs`.)
 6. `check:drift` também compara o modelo dos agentes Claude com a classe
    canônica.
 

@@ -14,4 +14,4 @@ squad gate <run-id> --gates test,scope
 - If the gates passed → check if test gaps remain; invoke the tester only if needed, after reserving its `write_scope`.
 - If a gate failed → return to the implementer with the gate evidence.
 
-`squad` means `npx -y @gregori/orchestrated-squad@latest`. Change the run only through `squad state ...`; never edit `state.json` by hand.
+`squad` means `node .squad/bin/squad.mjs` (the local runtime, run from the project root). Change the run only through `squad state ...`; never edit `state.json` by hand.

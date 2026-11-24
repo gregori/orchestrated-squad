@@ -4,7 +4,9 @@ import { appendFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const here = path.dirname(fileURLToPath(import.meta.url));
+// No pacote: squad/workflows; na cópia instalada em .squad/bin: ./workflows
+const workflowDirs = [path.join(here, 'workflows'), path.resolve(here, '..', 'squad', 'workflows')];
 const now = () => new Date().toISOString();
 const stateFile = (runDir) => path.join(runDir, 'state.json');
 
@@ -32,7 +34,11 @@ const workflowFiles = { 'squad-feature': 'feature.json', 'squad-plan': 'feature.
 /** Definição do workflow (grafo de fases e pré-condições) ou null se não houver. */
 export async function loadWorkflow(id) {
   const file = workflowFiles[id];
-  return file ? JSON.parse(await readFile(path.join(packageRoot, 'squad', 'workflows', file), 'utf8')) : null;
+  if (!file) return null;
+  for (const dir of workflowDirs) {
+    try { return JSON.parse(await readFile(path.join(dir, file), 'utf8')); } catch { /* tenta o próximo */ }
+  }
+  throw new Error(`workflow definition not found: ${file}`);
 }
 
 function gitHead(root) {

@@ -27,16 +27,19 @@ test('file-changing shell commands are denied, inspection commands are allowed',
   assert.ok(readOnlyReason({ toolName: 'runInTerminal', toolInput: { command: 'rm a' } })); // VS Code
 });
 
-test('the hook prints a PreToolUse deny decision, or nothing to allow', () => {
+test('the hook denies with JSON, stderr and exit 2, and allows with silence', () => {
   const deny = readOnlyHook(JSON.stringify(claude('Write', { file_path: 'x' })));
-  assert.equal(deny.hookSpecificOutput.permissionDecision, 'deny');
-  assert.match(deny.hookSpecificOutput.permissionDecisionReason, /squad state record/);
-  assert.equal(readOnlyHook(JSON.stringify(claude('Read'))), null);
-  assert.equal(readOnlyHook('not json'), null);
+  assert.equal(deny.exitCode, 2);
+  assert.equal(deny.result.hookSpecificOutput.permissionDecision, 'deny');
+  assert.match(deny.stderr, /squad state record/);
+  assert.deepEqual(readOnlyHook(JSON.stringify(claude('Read'))), { result: null, exitCode: 0 });
+  assert.equal(readOnlyHook('not json').exitCode, 0);
   const run = spawnSync(process.execPath, [cli, 'hook', 'read-only'], { input: JSON.stringify(claude('Edit')), encoding: 'utf8' });
-  assert.equal(run.status, 0);
+  assert.equal(run.status, 2);
   assert.equal(JSON.parse(run.stdout).hookSpecificOutput.permissionDecision, 'deny');
+  assert.match(run.stderr, /Read-only specialist/);
   const allow = spawnSync(process.execPath, [cli, 'hook', 'read-only'], { input: JSON.stringify(claude('Grep')), encoding: 'utf8' });
+  assert.equal(allow.status, 0);
   assert.equal(allow.stdout, '');
 });
 

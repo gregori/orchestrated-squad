@@ -10,7 +10,7 @@
 
 const EDIT_TOOL = /(edit|write|patch|create|delete|remove|rename|move|replace|insert)/i;
 const NOT_FILE_TOOL = /todo/i; // TodoWrite mexe na lista de tarefas, não em arquivos
-const SHELL_TOOL = /^(bash|shell|sh|terminal|run_?in_?terminal|execute|exec|run_?command|runcommands)$/i;
+const SHELL_TOOL = /^(bash|shell|sh|terminal|run_?in_?terminal|execute|exec|run_?command|runcommands|write_to_process)$/i;
 
 const SHELL_WRITES = [
   [/\btee\b/, 'tee'],
@@ -33,33 +33,53 @@ function redirections(command) {
   return found;
 }
 
+/** Ferramenta e argumentos do payload (Claude Code, VS Code e Devin CLI). */
+export function toolOf(payload) {
+  return {
+    tool: String(payload.tool_name ?? payload.toolName ?? payload.tool ?? ''),
+    input: payload.tool_input ?? payload.toolInput ?? payload.input ?? {},
+  };
+}
+
 /** Motivo da negação, ou null para permitir. */
-export function readOnlyReason(payload) {
-  const tool = String(payload.tool_name ?? payload.toolName ?? payload.tool ?? '');
-  const input = payload.tool_input ?? payload.toolInput ?? payload.input ?? {};
+export function readOnlyReason(payload, { allowSquadState = false } = {}) {
+  const { tool, input } = toolOf(payload);
   if (!tool) return null;
   if (SHELL_TOOL.test(tool)) {
     const command = String(input.command ?? input.cmd ?? input.commandLine ?? '');
     const targets = redirections(command);
     if (targets.length) return `output redirection to ${targets.join(', ')}`;
-    for (const [pattern, label] of SHELL_WRITES) if (pattern.test(command)) return label;
+    for (const [pattern, label] of SHELL_WRITES) {
+      if (allowSquadState && label.startsWith('run state change')) continue;
+      if (pattern.test(command)) return label;
+    }
     return null;
   }
   if (!NOT_FILE_TOOL.test(tool) && EDIT_TOOL.test(tool)) return `tool ${tool} changes files`;
   return null;
 }
 
-/** Saída no formato de decisão do PreToolUse (Claude Code e VS Code). Permitir = nenhuma saída. */
-export function readOnlyHook(raw) {
-  let payload;
-  try { payload = JSON.parse(raw || '{}'); } catch { return null; }
-  const reason = readOnlyReason(payload);
-  if (!reason) return null;
+/**
+ * Decisão de negação. Os harnesses diferem no protocolo, então a mesma
+ * resposta serve a todos: JSON `permissionDecision: deny` no stdout (Claude
+ * Code, VS Code), motivo no stderr e código de saída 2 (Devin CLI, Claude Code).
+ */
+export function denial(reason) {
   return {
-    hookSpecificOutput: {
-      hookEventName: 'PreToolUse',
-      permissionDecision: 'deny',
-      permissionDecisionReason: `Read-only specialist: ${reason} is not allowed. Return your result as text; the root session records it with \`squad state record\`.`,
-    },
+    result: { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason: reason } },
+    exitCode: 2,
+    stderr: reason,
   };
+}
+
+export function parsePayload(raw) {
+  try { return JSON.parse(raw || '{}'); } catch { return null; }
+}
+
+/** Hook por agente (read-only). Permitir = sem saída e código 0. */
+export function readOnlyHook(raw) {
+  const payload = parsePayload(raw);
+  const reason = payload && readOnlyReason(payload);
+  if (!reason) return { result: null, exitCode: 0 };
+  return denial(`Read-only specialist: ${reason} is not allowed. Return your result as text; the root session records it with \`squad state record\`.`);
 }

@@ -89,7 +89,23 @@ The workflow rules are enforced in code, not only in skill prose
   `write_scope` (files already dirty when the run started count only if they
   change again).
 
-Skills call the CLI through `npx -y @gregori/orchestrated-squad@latest`.
+Skills and hooks call the **local runtime** installed in `.squad/bin/`
+(`node .squad/bin/squad.mjs state|gate|hook …`): no network, no `npx`
+latency and always the installed version ([ADR 0005](docs/adr/0005-runtime-local-e-hooks.md)).
+`squad doctor` checks that it matches the package version.
+
+### Hooks
+
+| Hook | Scope | Installed in |
+|---|---|---|
+| `hook read-only` | per agent: read-only specialists | `.claude/agents/*.md`, `.github/agents/*.agent.md` frontmatter |
+| `hook phase-guard` | global: denies writes outside the active phase's `write_allowlist` | `.claude/settings.json`, `.devin/config.json` |
+
+A denial prints a `permissionDecision: deny` JSON on stdout, the reason on
+stderr and exits with code 2, so the same command works in Claude Code, VS Code
+and Devin CLI. Set `SQUAD_HOOK_LOG=1` to append one line per call (tool,
+session, decision; no content) to `.workflow/hook-log.jsonl`, for example to
+check whether a harness fires hooks inside subagents.
 
 ## Model policy
 

@@ -4,7 +4,22 @@
       "Bash(gh *)",
       "Bash(git *)",
       "Bash(npx *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(node .squad/bin/squad.mjs *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-${DEVIN_PROJECT_DIR:-.}}/.squad/bin/squad.mjs\" hook phase-guard",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }
