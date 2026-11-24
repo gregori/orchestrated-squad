@@ -253,7 +253,8 @@ async function main() {
   const raw = process.argv.slice(2);
   if (RUN_COMMANDS.includes(raw[0])) {
     const { result, exitCode } = await runCommand(raw[0], raw.slice(1));
-    console.log(JSON.stringify(result, null, 2));
+    if (raw[0] === 'hook') { if (result) process.stdout.write(`${JSON.stringify(result)}\n`); }
+    else console.log(JSON.stringify(result, null, 2));
     process.exitCode = exitCode;
     return;
   }

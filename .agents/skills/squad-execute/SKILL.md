@@ -16,8 +16,12 @@ run only through it; never edit `.workflow/runs/<run-id>/state.json` by hand.
   the run. A refusal (exit code 1) lists the reasons: report them and fix the
   cause instead of retrying. To stop, use `--to blocked --reason "<why>"`.
 - `squad state reserve <run-id> --worker <name> --files <paths>` before a
-  writer starts; `squad state annotate <run-id> --artifact review=<path>` after
-  the independent review is written.
+  writer starts.
+- Read-only specialists (product-manager, requirements-reviewer, tech-analyst,
+  reviewer, bug-triager) cannot write files: they return their result as text.
+  Record it with `squad state record <run-id> --artifact <name> --stdin`
+  (for example `requirements`, `requirements-review`, `plan`, `review`,
+  `diagnosis`).
 - `squad state check <run-id> --to <phase>` previews a transition.
 - Read-only phases (`requirements_review`, `review`, `verification`) may only
   change files under `.workflow/`; leaving them is refused if anything else

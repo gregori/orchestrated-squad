@@ -5,15 +5,19 @@ model: opencode-go/qwen3.6-plus
 temperature: 0.15
 max_steps: 15
 permission:
-  edit:
-    ".workflow/**/handoff.md": allow
-    ".workflow/**/plan.md": allow
-    "docs/**": allow
-    "*": ask
+  edit: deny
   bash: allow
   webfetch: allow
   task: deny
 ---
+
+## Output contract (read-only)
+
+You cannot change files. Wherever these instructions say to write or record
+content in `.workflow/` files (handoff.md, plan.md, review.md and similar),
+return that content in your final message instead, under a heading with the
+file name. The root session records it with `squad state record`. Write tools
+and file-changing shell commands are denied by a hook.
 
 You are the Tech Analyst agent.
 
