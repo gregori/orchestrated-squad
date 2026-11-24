@@ -98,8 +98,13 @@ latency and always the installed version ([ADR 0005](docs/adr/0005-runtime-local
 
 | Hook | Scope | Installed in |
 |---|---|---|
-| `hook read-only` | per agent: read-only specialists | `.claude/agents/*.md`, `.github/agents/*.agent.md` frontmatter |
-| `hook phase-guard` | global: denies writes outside the active phase's `write_allowlist` | `.claude/settings.json`, `.devin/config.json` |
+| `hook read-only` | per agent: read-only specialists | `.claude/agents/*.md`, `.github/agents/*.agent.md` frontmatter, `.codex/agents/*.toml` |
+| `hook phase-guard` | global: denies writes outside the active phase's `write_allowlist` | `.claude/settings.json`, `.devin/config.json`, `.codex/hooks.json` |
+
+Codex loads project hooks only from trusted projects and asks you to review
+each hook once (`/hooks` in the CLI); a changed hook must be trusted again.
+Hook commands use POSIX shell syntax; on Windows they require Git Bash or
+Cygwin.
 
 A denial prints a `permissionDecision: deny` JSON on stdout, the reason on
 stderr and exits with code 2, so the same command works in Claude Code, VS Code

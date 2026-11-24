@@ -24,13 +24,18 @@ ou a chave `hooks` de `.devin/config.json`), e o payload documentado traz
    hooks usam `node .squad/bin/squad.mjs …`. Os arquivos entram no manifest
    (preservados se o usuário alterar; removidos no `uninstall`). O `doctor`
    compara `VERSION` com o pacote.
-2. **Hook por agente** (`hook read-only`, ADR 0004) chama o runtime local.
+2. **Hook por agente** (`hook read-only`, ADR 0004) chama o runtime local. No
+   Codex, vai no TOML dos agentes somente leitura (`[[hooks.PreToolUse]]`),
+   já que o arquivo do agente é carregado como camada de configuração.
 3. **Hook por fase** (`hook phase-guard`), global: encontra a run ativa e, se a
    fase atual tem `write_allowlist`, nega edição fora dela e comandos de shell
    que alteram arquivos. Comandos do próprio runtime
    (`node .squad/bin/squad.mjs …`, sem encadeamento) são permitidos, para a raiz
-   gravar em `.workflow/`. Instalado em `.claude/settings.json` e
-   `.devin/config.json`.
+   gravar em `.workflow/`. Instalado em `.claude/settings.json`,
+   `.devin/config.json` e `.codex/hooks.json`. No Codex, `apply_patch` traz o
+   patch em `tool_input.command`; os caminhos são lidos das linhas
+   `*** Add|Update|Delete File:` e `*** Move to:`, e a raiz do projeto vem do
+   `cwd` do payload.
 4. **Protocolo único de negação:** JSON `permissionDecision: deny` no stdout,
    motivo no stderr e código de saída 2. Serve a Claude Code, VS Code e Devin.
 5. **`SQUAD_HOOK_LOG=1`** grava uma linha por chamada (hook, ferramenta,
@@ -47,7 +52,11 @@ ou a chave `hooks` de `.devin/config.json`), e o payload documentado traz
   documentação não diz). Teste com `SQUAD_HOOK_LOG=1` durante um
   `squad-review`. Se não disparar, o Devin fica com a ausência de ferramentas
   de escrita e a detecção por fase (ADR 0003).
-- O comando dos hooks usa expansão de variáveis no estilo POSIX
-  (`${CLAUDE_PROJECT_DIR:-…}`); no Windows sem bash, ajuste para o caminho
-  relativo.
-- Codex: os hooks globais não foram configurados nesta etapa.
+- Os comandos dos hooks usam sintaxe de shell POSIX (`${CLAUDE_PROJECT_DIR:-…}`,
+  `$(git rev-parse …)`). No Windows, a premissa é Git Bash ou Cygwin.
+- **Codex:** hooks de projeto só carregam em projeto confiável, e cada hook
+  precisa ser revisado uma vez (`/hooks`); a confiança é ligada ao hash, então
+  um hook alterado por `squad update` precisa ser aprovado de novo. **A
+  confirmar:** se o PreToolUse dispara dentro de subagentes e se o hook no TOML
+  do agente tem efeito (a documentação não diz; subagentes usam o session id do
+  pai). Teste com `SQUAD_HOOK_LOG=1`.

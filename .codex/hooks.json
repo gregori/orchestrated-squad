@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.squad/bin/squad.mjs\" hook phase-guard",
+            "statusMessage": "squad: checking the phase write allowlist",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -70,3 +70,22 @@ test('SQUAD_HOOK_LOG records hook calls without content', async (t) => {
   assert.equal(line.decision, 'allow');
   assert.ok(!('command' in line));
 });
+
+test('codex: global phase-guard and read-only agent hooks are installed, and apply_patch paths are checked', async (t) => {
+  const root = await installed(t, 'codex');
+  const hooks = JSON.parse(await readFile(path.join(root, '.codex', 'hooks.json'), 'utf8'));
+  assert.match(hooks.hooks.PreToolUse[0].hooks[0].command, /hook phase-guard/);
+  assert.match(await readFile(path.join(root, '.codex', 'agents', 'reviewer.toml'), 'utf8'), /hook read-only/);
+  assert.doesNotMatch(await readFile(path.join(root, '.codex', 'agents', 'implementer.toml'), 'utf8'), /hook read-only/);
+  assert.equal(local(root, ['state', 'init', 'd1', '--workflow', 'squad-debug']).status, 0);
+  assert.equal(local(root, ['state', 'transition', 'd1', '--to', 'diagnosis']).status, 0);
+  const patch = (file) => JSON.stringify({ hook_event_name: 'PreToolUse', cwd: path.join(root, 'src'), tool_name: 'apply_patch', tool_input: { command: `*** Begin Patch\n*** Update File: ${file}\n@@\n-a\n+b\n*** End Patch\n` } });
+  // sem variáveis de ambiente: a raiz vem do cwd do payload (Codex)
+  const env = { DEVIN_PROJECT_DIR: '', CLAUDE_PROJECT_DIR: '' };
+  const denied = local(root, ['hook', 'phase-guard'], patch('src/app.js'), env);
+  assert.equal(denied.status, 2);
+  assert.match(denied.stderr, /tried src\/app\.js/);
+  assert.equal(local(root, ['hook', 'phase-guard'], patch('.workflow/runs/d1/notes.md'), env).status, 0);
+  const bash = JSON.stringify({ hook_event_name: 'PreToolUse', cwd: root, tool_name: 'Bash', tool_input: { command: 'git checkout -- .' } });
+  assert.equal(local(root, ['hook', 'phase-guard'], bash, env).status, 2);
+});

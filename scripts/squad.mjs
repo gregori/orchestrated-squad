@@ -94,14 +94,14 @@ async function filesIn(root) {
 }
 
 const assetMap = {
-  codex: ['.codex/config.toml', '.codex/agents', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.agents/skills/squad-debug', '.agents/skills/squad-finish', '.agents/skills/squad-status', '.agents/skills/squad-resume', '.agents/skills/squad-next', '.agents/skills/squad-yolo', '.workflow/template'],
+  codex: ['.codex/config.toml', '.codex/hooks.json', '.codex/agents', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.agents/skills/squad-debug', '.agents/skills/squad-finish', '.agents/skills/squad-status', '.agents/skills/squad-resume', '.agents/skills/squad-next', '.agents/skills/squad-yolo', '.workflow/template'],
   claude: ['.claude/agents', '.claude/settings.json', '.claude/skills', '.workflow/template'],
   opencode: ['.opencode/agents', '.opencode/commands', '.opencode/epic-guide.md', 'opencode.json', '.agents/skills', '.workflow/template'],
   devin: ['.devin/agents', '.devin/config.json', '.devin/README.md', '.agents/skills/squad-init', '.agents/skills/squad-plan', '.agents/skills/squad-feature', '.agents/skills/squad-execute', '.agents/skills/squad-review', '.agents/skills/squad-test', '.agents/skills/squad-debug', '.agents/skills/squad-finish', '.agents/skills/squad-status', '.agents/skills/squad-resume', '.agents/skills/squad-next', '.agents/skills/squad-yolo', '.workflow/template'],
   vscode: ['.github/agents', '.github/skills'],
   omp: ['.omp/agents', '.omp/commands', '.omp/skills/squad-init', '.omp/skills/squad-plan', '.omp/skills/squad-feature', '.omp/skills/squad-execute', '.omp/skills/squad-review', '.omp/skills/squad-test', '.omp/skills/squad-debug', '.omp/skills/squad-finish', '.omp/skills/squad-status', '.omp/skills/squad-resume', '.omp/skills/squad-next', '.omp/skills/squad-yolo', '.workflow/template'],
 };
-const jsonAssets = new Set(['.claude/settings.json', '.devin/config.json', 'opencode.json']);
+const jsonAssets = new Set(['.claude/settings.json', '.devin/config.json', '.codex/hooks.json', 'opencode.json']);
 const tomlAssets = new Set(['.codex/config.toml']);
 
 function mergeJson(existing, incoming) {

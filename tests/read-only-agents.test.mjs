@@ -25,6 +25,8 @@ test('file-changing shell commands are denied, inspection commands are allowed',
   for (const command of denied) assert.ok(readOnlyReason(claude('Bash', { command })), command);
   for (const command of allowed) assert.equal(readOnlyReason(claude('Bash', { command })), null, command);
   assert.ok(readOnlyReason({ toolName: 'runInTerminal', toolInput: { command: 'rm a' } })); // VS Code
+  assert.ok(readOnlyReason({ tool_name: 'apply_patch', tool_input: { command: '*** Begin Patch' } })); // Codex
+  assert.ok(readOnlyReason({ tool_name: 'Bash', tool_input: { command: 'sed -i s/a/b/ x' } })); // Codex
 });
 
 test('the hook denies with JSON, stderr and exit 2, and allows with silence', () => {
