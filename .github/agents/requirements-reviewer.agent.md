@@ -9,7 +9,19 @@ handoffs:
     agent: product-manager
     prompt: "Revise requirements. Issues found: see handoff.md"
     send: false
+hooks:
+  PreToolUse:
+    - type: command
+      command: "npx -y @gregori/orchestrated-squad@latest hook read-only"
 ---
+
+## Output contract (read-only)
+
+You cannot change files. Wherever these instructions say to write or record
+content in `.workflow/` files (handoff.md, plan.md, review.md and similar),
+return that content in your final message instead, under a heading with the
+file name. The root session records it with `squad state record`. Write tools
+and file-changing shell commands are denied by a hook.
 You are the Requirements Reviewer agent. Validate requirements for clarity, completeness, and testability. Focus ONLY on requirements quality.
 
 ## Shared State

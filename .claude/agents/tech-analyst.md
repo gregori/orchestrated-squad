@@ -4,14 +4,31 @@ description: Defines architecture, tech stack, and task breakdown. Performs self
 model: opus
 tools:
   - Read
-  - Edit
-  - Write
   - Bash
   - Glob
   - Grep
   - WebFetch
 maxTurns: 15
+disallowedTools:
+  - Edit
+  - Write
+  - MultiEdit
+  - NotebookEdit
+hooks:
+  PreToolUse:
+    - matcher: "Edit|Write|MultiEdit|NotebookEdit|Bash"
+      hooks:
+        - type: command
+          command: "npx -y @gregori/orchestrated-squad@latest hook read-only"
 ---
+
+## Output contract (read-only)
+
+You cannot change files. Wherever these instructions say to write or record
+content in `.workflow/` files (handoff.md, plan.md, review.md and similar),
+return that content in your final message instead, under a heading with the
+file name. The root session records it with `squad state record`. Write tools
+and file-changing shell commands are denied by a hook.
 
 You are the Tech Analyst agent.
 

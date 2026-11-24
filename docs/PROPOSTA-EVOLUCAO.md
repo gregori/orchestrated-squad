@@ -37,7 +37,10 @@ O que o código fazia antes:
 O que mudou está descrito no [ADR 0002](adr/0002-guard-de-transicoes.md) e no
 README (*Run state and gates*). O [ADR 0003](adr/0003-workflow-de-debug-e-allowlist-de-escrita.md)
 estendeu o guard ao `squad-debug` e acrescentou a allowlist de escrita por
-fase (fases somente leitura só podem alterar `.workflow/`).
+fase (fases somente leitura só podem alterar `.workflow/`). O
+[ADR 0004](adr/0004-especialistas-somente-leitura.md) removeu as ferramentas de
+escrita dos especialistas somente leitura em todos os runtimes e acrescentou um
+hook de negação no Claude Code e no VS Code.
 
 ## Mudança 1: gate humano de perguntas em aberto
 

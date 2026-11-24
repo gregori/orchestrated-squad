@@ -1,9 +1,15 @@
-import { readdir, stat } from 'node:fs/promises';
+import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { runConfiguredGates } from './gate-runner.mjs';
 import { annotate, checkTransition, createRun, readState, releaseFiles, reserveFiles, transition, TransitionError } from './workflow-state.mjs';
 
-export const RUN_COMMANDS = ['state', 'gate'];
+export const RUN_COMMANDS = ['state', 'gate', 'hook'];
+
+async function readStdin() {
+  const chunks = [];
+  for await (const chunk of process.stdin) chunks.push(chunk);
+  return Buffer.concat(chunks).toString('utf8');
+}
 
 export function runUsage() {
   return `Run state (the only supported way to change .workflow/runs/<run-id>/state.json):
@@ -12,11 +18,16 @@ export function runUsage() {
   squad state check <run-id> --to <phase>
   squad state transition <run-id> --to <phase> --next "<next action>" [--reason "<why blocked>"]
   squad state annotate <run-id> [--next "<next action>"] [--artifact <name>=<path>]
+  squad state record <run-id> --artifact <name> (--file <path> | --stdin)
+      writes .workflow/runs/<run-id>/<name>.md and records it (for read-only specialists' output)
   squad state reserve <run-id> --worker <name> --files <a,b,src/>
   squad state release <run-id> --worker <name>
 
 Deterministic gates (commands come from .squad/config.yaml, never from the agent):
   squad gate <run-id> [--gates lint,test,scope]
+
+Agent hooks (deny writes for read-only specialists; reads the hook payload on stdin):
+  squad hook read-only
 
 Common option: --dir <project> (default: current directory)`;
 }
@@ -31,10 +42,12 @@ function parse(values) {
     else if (value === '--next') args.next = take();
     else if (value === '--reason') args.reason = take();
     else if (value === '--workflow') args.workflow = take();
+    else if (value === '--file') args.file = take();
+    else if (value === '--stdin') args.stdin = true;
     else if (value === '--worker') args.worker = take();
     else if (value === '--files') args.files = (take() ?? '').split(',').map((f) => f.trim()).filter(Boolean);
     else if (value === '--gates') args.gates = (take() ?? '').split(',').map((g) => g.trim()).filter(Boolean);
-    else if (value === '--artifact') { const [name, ...rest] = (take() ?? '').split('='); args.artifacts[name] = rest.join('='); }
+    else if (value === '--artifact') { const [name, ...rest] = (take() ?? '').split('='); args.artifacts[name] = rest.join('='); args.artifactName = name; }
     else if (value.startsWith('--')) throw new Error(`Unknown option: ${value}`);
     else args.positional.push(value);
   }
@@ -66,6 +79,12 @@ function requireRun(args) {
 /** Executa `squad state ...` / `squad gate ...`; retorna { result, exitCode }. */
 export async function runCommand(command, values) {
   const args = parse(values);
+  if (command === 'hook') {
+    const { readOnlyHook } = await import('./agent-hooks.mjs');
+    if (args.positional[0] !== 'read-only') throw new Error('Usage: squad hook read-only');
+    const output = readOnlyHook(await readStdin());
+    return { result: output, exitCode: 0 };
+  }
   if (command === 'gate') {
     const runId = requireRun(args);
     const result = await runConfiguredGates({ root: args.dir, runDir: runDirOf(args.dir, runId), gates: args.gates });
@@ -99,6 +118,17 @@ export async function runCommand(command, values) {
       if (error instanceof TransitionError) return { result: { refused: true, reasons: error.reasons }, exitCode: 1 };
       throw error;
     }
+  }
+  if (action === 'record') {
+    const name = args.artifactName;
+    if (!name || !/^[a-z][a-z0-9-]*$/.test(name)) throw new Error('--artifact <name> is required (lowercase letters, digits and dashes)');
+    if (!args.file && !args.stdin) throw new Error('--file <path> or --stdin is required');
+    const content = args.stdin ? await readStdin() : await readFile(path.resolve(args.dir, args.file), 'utf8');
+    if (!content.trim()) throw new Error('refusing to record an empty artifact');
+    const relative = path.join('.workflow', 'runs', runId, `${name}.md`);
+    await writeFile(path.join(args.dir, relative), content.endsWith('\n') ? content : `${content}\n`);
+    const state = await annotate(runDir, { artifacts: { [name]: relative.split(path.sep).join('/') } });
+    return { result: { recorded: relative, artifacts: state.artifacts }, exitCode: 0 };
   }
   if (action === 'annotate') {
     return { result: await annotate(runDir, { next_action: args.next, artifacts: Object.keys(args.artifacts).length ? args.artifacts : undefined }), exitCode: 0 };

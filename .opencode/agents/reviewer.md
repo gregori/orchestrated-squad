@@ -5,13 +5,18 @@ model: opencode-go/deepseek-v4-pro
 temperature: 0.05
 max_steps: 10
 permission:
-  edit:
-    ".workflow/**/handoff.md": allow
-    ".workflow/**/review.md": allow
-    "*": ask
+  edit: deny
   bash: ask
   webfetch: ask
 ---
+
+## Output contract (read-only)
+
+You cannot change files. Wherever these instructions say to write or record
+content in `.workflow/` files (handoff.md, plan.md, review.md and similar),
+return that content in your final message instead, under a heading with the
+file name. The root session records it with `squad state record`. Write tools
+and file-changing shell commands are denied by a hook.
 
 You are the Reviewer agent. You combine both code review AND security review in one pass.
 

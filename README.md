@@ -74,6 +74,12 @@ The workflow rules are enforced in code, not only in skill prose
   such as `review`, `requirements_review`, `verification` and the debug
   `diagnosis`). Leaving such a phase is refused when any other file changed
   since it started ([ADR 0003](docs/adr/0003-workflow-de-debug-e-allowlist-de-escrita.md)).
+- Read-only specialists (product-manager, requirements-reviewer,
+  tech-analyst, reviewer, bug-triager) have no write tools in any runtime and
+  a `PreToolUse` deny hook (`squad hook read-only`) in Claude Code and VS Code.
+  They return their result as text and the root records it with
+  `squad state record <run-id> --artifact <name> --stdin`
+  ([ADR 0004](docs/adr/0004-especialistas-somente-leitura.md)).
 - `squad-debug` has its own graph (`squad/workflows/debug.json`):
   `initialized → diagnosis → diagnosed → complete`.
 - `squad gate <run-id>` runs the gates with the commands from
@@ -173,7 +179,8 @@ npm pack --dry-run
 
 `check:drift` also verifies that `.claude/agents/*.md` declare the alias of
 their canonical model class (`economy → haiku`, `standard → sonnet`,
-`premium → opus`).
+`premium → opus`) and that read-only specialists have no write path in any
+runtime.
 
 ## Roadmap
 
