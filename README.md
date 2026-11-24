@@ -70,6 +70,12 @@ The workflow rules are enforced in code, not only in skill prose
   `transition_refused` events.
 - After `max_cycles` review cycles the run must move to `blocked` with a
   reason; a blocked run resumes only to the phase where it stopped.
+- Phases can declare a `write_allowlist` (`.workflow/` for read-only phases
+  such as `review`, `requirements_review`, `verification` and the debug
+  `diagnosis`). Leaving such a phase is refused when any other file changed
+  since it started ([ADR 0003](docs/adr/0003-workflow-de-debug-e-allowlist-de-escrita.md)).
+- `squad-debug` has its own graph (`squad/workflows/debug.json`):
+  `initialized → diagnosis → diagnosed → complete`.
 - `squad gate <run-id>` runs the gates with the commands from
   `.squad/config.yaml`, never commands chosen by an agent. `test` and `scope`
   are always required: a required gate without a command is `blocked`, and

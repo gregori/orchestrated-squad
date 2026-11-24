@@ -83,6 +83,24 @@
       "additionalProperties": {
         "type": "string"
       }
+    },
+    "phase_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "phase": {
+          "type": "string"
+        },
+        "head": {
+          "type": "string"
+        },
+        "dirty": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
     }
   }
 }

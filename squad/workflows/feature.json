@@ -24,5 +24,10 @@
     "ready_to_finish": ["gates_passed", "review_recorded"]
   },
   "cycle_transitions": [["review", "implementation"], ["verification", "implementation"]],
-  "required_gates": ["test", "scope"]
+  "required_gates": ["test", "scope"],
+  "write_allowlist": {
+    "requirements_review": [".workflow/"],
+    "review": [".workflow/"],
+    "verification": [".workflow/"]
+  }
 }

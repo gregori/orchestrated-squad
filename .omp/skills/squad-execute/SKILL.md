@@ -19,6 +19,9 @@ run only through it; never edit `.workflow/runs/<run-id>/state.json` by hand.
   writer starts; `squad state annotate <run-id> --artifact review=<path>` after
   the independent review is written.
 - `squad state check <run-id> --to <phase>` previews a transition.
+- Read-only phases (`requirements_review`, `review`, `verification`) may only
+  change files under `.workflow/`; leaving them is refused if anything else
+  changed since the phase started.
 
 ## Deterministic gates (REQUIRED before review)
 

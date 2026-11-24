@@ -34,6 +34,8 @@
           "test_authoring",
           "verification",
           "ready_to_finish",
+          "diagnosis",
+          "diagnosed",
           "complete",
           "blocked"
         ]
@@ -67,6 +69,8 @@
           "test_authoring",
           "verification",
           "ready_to_finish",
+          "diagnosis",
+          "diagnosed",
           "complete",
           "blocked"
         ]
@@ -86,6 +90,8 @@
             "test_authoring",
             "verification",
             "ready_to_finish",
+            "diagnosis",
+            "diagnosed",
             "complete",
             "blocked"
           ]
@@ -107,6 +113,8 @@
           "test_authoring",
           "verification",
           "ready_to_finish",
+          "diagnosis",
+          "diagnosed",
           "complete",
           "blocked"
         ]
@@ -116,7 +124,8 @@
         "items": {
           "enum": [
             "gates_passed",
-            "review_recorded"
+            "review_recorded",
+            "diagnosis_recorded"
           ]
         }
       }
@@ -140,6 +149,8 @@
             "test_authoring",
             "verification",
             "ready_to_finish",
+            "diagnosis",
+            "diagnosed",
             "complete",
             "blocked"
           ]
@@ -151,6 +162,35 @@
       "items": {
         "type": "string",
         "pattern": "^[a-z][a-z-]*$"
+      }
+    },
+    "write_allowlist": {
+      "type": "object",
+      "propertyNames": {
+        "enum": [
+          "initialized",
+          "requirements",
+          "requirements_review",
+          "design",
+          "planned",
+          "implementation",
+          "deterministic_checks",
+          "review",
+          "test_authoring",
+          "verification",
+          "ready_to_finish",
+          "diagnosis",
+          "diagnosed",
+          "complete",
+          "blocked"
+        ]
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     }
   }
