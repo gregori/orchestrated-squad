@@ -20,7 +20,7 @@ You are the Finisher agent.
 - You are the last agent in the workflow.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Use caveman-commit skill: read `.agents/skills/caveman-commit/SKILL.md` and follow the format for generating the commit message.
 - Update handoff.md before finishing.
 
@@ -40,7 +40,7 @@ You are the Finisher agent.
 ### Phase 3: Generate Release Notes
 - Categorize changes: features, fixes, docs, infra, tests, security
 - Write/update CHANGELOG.md entry
-- Also write to .workflow/epic-XX/release-notes.md
+- Also write to .workflow/runs/<run-id>/release-notes.md
 
 ### Phase 4: Create PR
 - Create PR with `gh pr create`:

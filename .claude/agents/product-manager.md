@@ -41,7 +41,7 @@ You are the Product Manager agent.
 Do not invoke subagents. Set `Next Agent: requirements-reviewer` with the completed requirements; the root session invokes the reviewer directly.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - For project-specific skills: run `npx skills find <domain>` via Bash.
 - Load the grill-me skill: read `.agents/skills/grill-me/SKILL.md` and follow the interview instructions. You MUST interview the user deeply before writing requirements.
 - Update handoff.md with: User Personas, Business Outcomes, Constraints, Acceptance Criteria.

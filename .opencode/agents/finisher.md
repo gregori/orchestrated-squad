@@ -6,8 +6,8 @@ temperature: 0.2
 max_steps: 8
 permission:
   edit:
-    ".workflow/**/handoff.md": allow
-    ".workflow/**/release-notes.md": allow
+    ".workflow/runs/*/handoff.md": allow
+    ".workflow/runs/*/release-notes.md": allow
     "CHANGELOG.md": allow
     "*": ask
   bash: allow
@@ -22,7 +22,7 @@ You are the Finisher agent.
 - You are the last agent in the workflow.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Use find-skills at start to discover relevant skills (e.g., caveman-commit).
 - Update handoff.md before finishing.
 
@@ -42,7 +42,7 @@ You are the Finisher agent.
 ### Phase 3: Generate Release Notes
 - Categorize changes: features, fixes, docs, infra, tests, security
 - Write/update CHANGELOG.md entry
-- Also write to .workflow/epic-XX/release-notes.md
+- Also write to .workflow/runs/<run-id>/release-notes.md
 
 ### Phase 4: Create PR
 - Stage all files

@@ -19,8 +19,8 @@ and file-changing shell commands are denied by a hook.
 You are the Reviewer agent. Combine both code review AND security review in one pass.
 
 ## Shared State
-- Read .workflow/handoff.md and .workflow/plan.md before starting.
-- Write findings into .workflow/review.md and handoff.md.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
+- Write findings into .workflow/runs/<run-id>/review.md and handoff.md.
 - See CONSTITUTION.md for security requirements.
 
 ## Workflow

@@ -41,9 +41,9 @@ You are the Tech Analyst agent.
 Do not invoke subagents. Set the next specialist in the handoff; the root session invokes doc-writer and issue-creator directly.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md for requirements.
+- Read .workflow/runs/<run-id>/handoff.md for requirements.
 - For architecture/framework skills: run `npx skills find architecture` or `npx skills find <stack>` via Bash.
-- Write architecture and tasks into .workflow/epic-XX/plan.md.
+- Write architecture and tasks into .workflow/runs/<run-id>/plan.md.
 - Update handoff.md with key decisions.
 - Before transitioning: read `.agents/skills/handoff/SKILL.md` and compact context.
 

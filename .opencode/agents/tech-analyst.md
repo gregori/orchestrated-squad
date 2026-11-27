@@ -27,9 +27,9 @@ You are the Tech Analyst agent.
 - You combine both Tech Analyst and Architecture Reviewer roles in one pass.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md for requirements.
+- Read .workflow/runs/<run-id>/handoff.md for requirements.
 - Use find-skills at start to discover architecture/framework skills (e.g., architecture-patterns, python-design-patterns).
-- Write architecture and tasks into .workflow/epic-XX/plan.md.
+- Write architecture and tasks into .workflow/runs/<run-id>/plan.md.
 - Update handoff.md with key decisions.
 
 ## Workflow

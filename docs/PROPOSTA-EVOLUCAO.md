@@ -10,14 +10,28 @@ classes de modelo, `write_scope` disjunto e no máximo dois ciclos de review.
 
 | # | Mudança | Problema que resolve | Status |
 |---|---|---|---|
-| 0 | Guard de transições e gate runner único | Regras que dependem do LLM seguir a skill | **Implementada** ([ADR 0002](adr/0002-guard-de-transicoes.md)) |
+| 0 | Guard de transições e gate runner único | Regras que dependem do LLM seguir a skill | **Implementada** (ADR 0002) |
 | 1 | Gate de perguntas bloqueantes | Requisitos inventados em histórias vagas | Proposta |
 | 2 | Testes de aceite com prova de vermelho | Testes que confirmam o código em vez da spec | Proposta |
 | 3 | Fast path sem handoff de design | Custo de handoff em histórias pequenas | Proposta |
 | 4 | Revisor de outra família (`preferred`) | Revisor com os mesmos pontos cegos do autor | Proposta |
-| 5 | Métricas de resultado e tokens por tarefa | Falta de dados para decidir o que se paga | Proposta |
+| 5 | Métricas de resultado e tokens por tarefa | Falta de dados para decidir o que se paga | Proposta (próximo passo) |
 | 6 | PRs por fatia entregável | PR único e grande no fim, difícil de revisar | Proposta |
 | 7 | Escolha dinâmica de modelos | Classe fixa por papel, que não acompanha o risco da tarefa | Item 1 implementado (drift de modelo) |
+
+Além do roteiro original, a mudança 0 trouxe trabalho de proteção que já está
+na `main`:
+
+| Entrega | ADR |
+|---|---|
+| Grafo de fases do `squad-debug` e allowlist de escrita por fase | [0003](adr/0003-workflow-de-debug-e-allowlist-de-escrita.md) |
+| Especialistas somente leitura sem ferramentas de escrita (`squad state record`) | [0004](adr/0004-especialistas-somente-leitura.md) |
+| Runtime local em `.squad/bin/`, hooks `read-only` e `phase-guard` (Claude Code, VS Code, Devin, Codex) | [0005](adr/0005-runtime-local-e-hooks.md) |
+| Run ativa explícita (`.workflow/active`), `activate` e `abandon` | [0006](adr/0006-run-ativa-explicita.md) |
+
+**A validar em uso real:** se os hooks disparam dentro de subagentes no Devin
+e no Codex (`SQUAD_HOOK_LOG=1`), o formato do payload no VS Code e o efeito de
+`sandbox_mode` por agente no Codex.
 
 O plano também serve de base para uma versão corporativa (seção
 *Portabilidade para o trabalho*): compartilha-se a spec, não o código.
@@ -156,7 +170,7 @@ desligado, diversidade `preferred`.
 
 ## Ordem de implementação
 
-1. ~~Guard de transições e gate runner único (mudança 0), com drift de modelo.~~
+1. ~~Guard de transições e gate runner único (mudança 0), com drift de modelo e as proteções dos ADRs 0003 a 0006.~~
 2. Medição local mínima (mudança 5, parte 1) e baseline.
 3. Gate de perguntas (mudança 1).
 4. Testes de aceite em pytest (mudança 2).

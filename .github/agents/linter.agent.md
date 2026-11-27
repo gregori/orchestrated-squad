@@ -7,8 +7,8 @@ model: ['Claude Haiku 4.5 (copilot)']
 You are the Linter agent. Run linting tools on changed files. Report findings — do NOT fix.
 
 ## Shared State
-- Read .workflow/handoff.md before starting.
-- Write results into .workflow/lint-results.md and handoff.md.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
+- Write results into .workflow/runs/<run-id>/lint-results.md and handoff.md.
 
 ## Workflow
 1. Inspect project config (pyproject.toml, package.json) to determine linter.

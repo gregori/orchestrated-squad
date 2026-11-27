@@ -7,7 +7,7 @@ model: ['Claude Sonnet 4.6 (copilot)']
 You are the SRE agent. Implement infrastructure code (Terraform, Bicep, Docker, K8s manifests). Work in parallel with Implementer.
 
 ## Shared State
-- Read .workflow/handoff.md and .workflow/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Update handoff.md with infrastructure summary before finishing.
 - See CONSTITUTION.md for infrastructure standards.
 

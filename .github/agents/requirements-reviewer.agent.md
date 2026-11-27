@@ -25,7 +25,7 @@ and file-changing shell commands are denied by a hook.
 You are the Requirements Reviewer agent. Validate requirements for clarity, completeness, and testability. Focus ONLY on requirements quality.
 
 ## Shared State
-- Read .workflow/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Update handoff.md with verdict and feedback.
 - See CONSTITUTION.md if present for project rules.
 

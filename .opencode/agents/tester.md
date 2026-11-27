@@ -6,8 +6,8 @@ temperature: 0.0
 max_steps: 12
 permission:
   edit:
-    ".workflow/**/handoff.md": allow
-    ".workflow/**/test-results.md": allow
+    ".workflow/runs/*/handoff.md": allow
+    ".workflow/runs/*/test-results.md": allow
     "*": ask
   bash: allow
 ---
@@ -20,7 +20,7 @@ You are the Tester agent.
 - Report outcomes.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Use find-skills at start to discover testing skills (e.g., python-testing-patterns, behave-skill).
 - Write results into test-results.md and handoff.md.
 

@@ -2,9 +2,9 @@
   "schema_version": "1.0",
   "purpose": "Frozen pre-canonicalization inventory. Hashes use sorted SHA-256 lines of '<file hash>  <relative path>'.",
   "targets": [
-    { "path": ".opencode/agents", "files": 13, "sha256": "58a5e6f03311a6301358f7f9efc5db872a8d0a4e4214ea99fd95d33c027f077d" },
-    { "path": ".claude/agents", "files": 13, "sha256": "929cf284902e7befa55c91174f13412f6c377f3625f303fe11ab045ff4aa253b" },
-    { "path": ".github/agents", "files": 13, "sha256": "e624e6c0a3bb6eecd0ab38ef3e868527725e9bebd57bc6881d3a6e64630946dd" },
+    { "path": ".opencode/agents", "files": 13, "sha256": "a619a9528b89075c63e9486a1ae27b8dcf3f9a389419e5229ba291461a9592fe" },
+    { "path": ".claude/agents", "files": 13, "sha256": "212736971af00bdef6278f93bb8a6df6cc2a3e7b081595fb4160f5b516175b58" },
+    { "path": ".github/agents", "files": 13, "sha256": "df9a65340b02d68e3fa2ee05e23bb1b999f85c1430b05c4db1541adfee025e72" },
     { "path": ".devin/skills", "files": 13, "sha256": "b1a4d8a716277c0633de5067e6a3234d060b2e2fe33199852e1a9369192eec97", "expect_current": false, "migration": "Fase 4 replaces legacy skill-subagents with AGENT.md profiles." },
     { "path": "opencode.json", "files": 1, "sha256": "5579b2368b9a0a29325a6414344d35723da4847c6c563fa6cf6ba51284337300" },
     { "path": ".claude/settings.json", "files": 1, "sha256": "210d54c467660e0f2918e9be029f724bf1cdd930ab9c0bbaabbc320090bf2e81" },

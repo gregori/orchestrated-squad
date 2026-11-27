@@ -8,11 +8,11 @@
  * raiz grava em `.workflow/`.
  */
 import { existsSync } from 'node:fs';
-import { readdir, readFile, stat } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { readOnlyReason, toolOf } from './agent-hooks.mjs';
 import { covered } from './scope-check.mjs';
-import { loadWorkflow } from './workflow-state.mjs';
+import { loadWorkflow, readActive } from './workflow-state.mjs';
 
 const PATH_KEYS = ['file_path', 'filePath', 'path', 'target_file', 'targetFile', 'notebook_path', 'filename'];
 const SQUAD_RUNTIME = /^\s*node\s+("[^"]*|\S*)\.squad\/bin\/squad\.mjs"?\s+[^;&|`$<>]*$/;
@@ -33,22 +33,14 @@ export function projectDir(env = process.env, payload = null) {
   return env.DEVIN_PROJECT_DIR || env.CLAUDE_PROJECT_DIR || findRoot(payload?.cwd || process.cwd());
 }
 
-/** Run ativa mais recente (estado diferente de complete), ou null. */
+/** Run apontada por `.workflow/active`, se ainda estiver em andamento. */
 export async function activeRun(root) {
-  const base = path.join(root, '.workflow', 'runs');
-  let names = [];
-  try { names = await readdir(base); } catch { return null; }
-  let best = null;
-  for (const name of names) {
-    const file = path.join(base, name, 'state.json');
-    try {
-      const state = JSON.parse(await readFile(file, 'utf8'));
-      if (state.status === 'complete') continue;
-      const mtime = (await stat(file)).mtimeMs;
-      if (!best || mtime > best.mtime) best = { state, mtime };
-    } catch { /* não é uma run */ }
-  }
-  return best?.state ?? null;
+  const runId = await readActive(root);
+  if (!runId) return null;
+  try {
+    const state = JSON.parse(await readFile(path.join(root, '.workflow', 'runs', runId, 'state.json'), 'utf8'));
+    return ['complete', 'abandoned'].includes(state.status) ? null : state;
+  } catch { return null; }
 }
 
 /** Caminhos citados num patch do Codex (`*** Add|Update|Delete File:` e `*** Move to:`). */

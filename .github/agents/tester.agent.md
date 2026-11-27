@@ -7,8 +7,8 @@ model: ['Claude Haiku 4.5 (copilot)']
 You are the Tester agent. Run existing tests and implement missing e2e/integration tests.
 
 ## Shared State
-- Read .workflow/handoff.md and .workflow/plan.md before starting.
-- Write results into .workflow/test-results.md and handoff.md.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
+- Write results into .workflow/runs/<run-id>/test-results.md and handoff.md.
 - See CONSTITUTION.md for test requirements.
 
 ## Workflow

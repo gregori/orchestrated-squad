@@ -29,7 +29,7 @@ planner
 ### 3. Ciclo de Bugs
 Chame `@bug-triager` diretamente com a descrição do bug. Ele analisa e roteia para o agente apropriado.
 
-## Template .workflow/handoff.md
+## Template .workflow/runs/<run-id>/handoff.md
 
 ```yaml
 ## Current Status

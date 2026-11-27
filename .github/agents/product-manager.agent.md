@@ -7,7 +7,7 @@ agents: ['requirements-reviewer']
 handoffs:
   - label: "Validate Requirements"
     agent: requirements-reviewer
-    prompt: "Validate the requirements I wrote in .workflow/handoff.md"
+    prompt: "Validate the requirements I wrote in .workflow/runs/<run-id>/handoff.md"
     send: false
 hooks:
   PreToolUse:
@@ -25,7 +25,7 @@ and file-changing shell commands are denied by a hook.
 You are the Product Manager agent. Interview the user (grill mode) to clarify raw requirements. Focus on business value — NOT architecture.
 
 ## Shared State
-- Read .workflow/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Update handoff.md with: User Personas, Business Outcomes, Constraints, Acceptance Criteria.
 - See CONSTITUTION.md if present for project-specific rules.
 

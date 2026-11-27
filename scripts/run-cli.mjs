@@ -1,7 +1,7 @@
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { runConfiguredGates } from './gate-runner.mjs';
-import { annotate, checkTransition, createRun, readState, releaseFiles, reserveFiles, transition, TransitionError } from './workflow-state.mjs';
+import { abandonRun, annotate, checkTransition, createRun, readActive, readState, releaseFiles, reserveFiles, setActive, transition, TransitionError } from './workflow-state.mjs';
 
 export const RUN_COMMANDS = ['state', 'gate', 'hook'];
 
@@ -24,7 +24,9 @@ async function readStdin() {
 export function runUsage() {
   return `Run state (the only supported way to change .workflow/runs/<run-id>/state.json):
   squad state init <run-id> [--workflow squad-feature]
-  squad state status [<run-id>]
+  squad state status [<run-id>]          (default: the active run)
+  squad state activate <run-id>          make a run the active one (.workflow/active)
+  squad state abandon <run-id> --reason "<why>"
   squad state check <run-id> --to <phase>
   squad state transition <run-id> --to <phase> --next "<next action>" [--reason "<why blocked>"]
   squad state annotate <run-id> [--next "<next action>"] [--artifact <name>=<path>]
@@ -69,6 +71,8 @@ function parse(values) {
 const runDirOf = (dir, runId) => path.join(dir, '.workflow', 'runs', runId);
 
 async function latestActiveRun(dir) {
+  const pointed = await readActive(dir);
+  if (pointed) return pointed;
   const base = path.join(dir, '.workflow', 'runs');
   let names = [];
   try { names = await readdir(base); } catch { return null; }
@@ -76,7 +80,7 @@ async function latestActiveRun(dir) {
   for (const name of names) {
     try {
       const state = await readState(path.join(base, name));
-      if (state.status !== 'complete') runs.push({ name, updated: (await stat(path.join(base, name, 'state.json'))).mtimeMs });
+      if (!['complete', 'abandoned'].includes(state.status)) runs.push({ name, updated: (await stat(path.join(base, name, 'state.json'))).mtimeMs });
     } catch { /* not a run */ }
   }
   return runs.sort((a, b) => b.updated - a.updated)[0]?.name ?? null;
@@ -124,6 +128,15 @@ export async function runCommand(command, values) {
   }
   const runId = requireRun(args);
   const runDir = runDirOf(args.dir, runId);
+  if (action === 'activate') {
+    const state = await readState(runDir);
+    if (['complete', 'abandoned'].includes(state.status)) throw new Error(`run ${runId} is ${state.status}`);
+    await setActive(args.dir, runId);
+    return { result: { active: runId }, exitCode: 0 };
+  }
+  if (action === 'abandon') {
+    return { result: await abandonRun(runDir, args.reason), exitCode: 0 };
+  }
   if (action === 'check') {
     if (!args.to) throw new Error('--to is required');
     const reasons = await checkTransition(runDir, await readState(runDir), { phase: args.to });

@@ -6,8 +6,8 @@ temperature: 0.0
 max_steps: 6
 permission:
   edit:
-    ".workflow/**/handoff.md": allow
-    ".workflow/**/lint-results.md": allow
+    ".workflow/runs/*/handoff.md": allow
+    ".workflow/runs/*/lint-results.md": allow
   bash: allow
 ---
 
@@ -18,7 +18,7 @@ You are the Linter agent.
 - Report findings — do NOT fix issues yourself.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Use find-skills at start to discover linting skills (e.g., eslint-prettier-config, ruff-recursive-fix, python-code-style).
 - Write results into lint-results.md and handoff.md.
 

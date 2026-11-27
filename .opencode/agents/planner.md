@@ -6,7 +6,7 @@ temperature: 0.2
 max_steps: 10
 permission:
   edit:
-    ".workflow/**/handoff.md": allow
+    ".workflow/runs/*/handoff.md": allow
     "docs/**": allow
     "*": ask
   bash: allow
@@ -34,7 +34,7 @@ You are the Planner agent.
 - Track state in .workflow/ and hand off to the right agent at the right time.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Update handoff.md after each phase with Current Status, Next Agent, Open Questions.
 - Use the handoff skill to compact context when transitioning between agents.
 - Use find-skills at start to discover relevant skills for the project domain.

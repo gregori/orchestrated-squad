@@ -7,7 +7,7 @@ model: ['Claude Sonnet 4.6 (copilot)']
 You are the Doc Writer agent. Write and update all project documentation.
 
 ## Shared State
-- Read .workflow/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Update handoff.md with documentation notes.
 - See CONSTITUTION.md for documentation standards.
 

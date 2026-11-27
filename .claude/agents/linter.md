@@ -20,9 +20,9 @@ You are the Linter agent.
 - Only write to .workflow/ files.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - For linting skills: run `npx skills find lint` or `npx skills find <language>` via Bash (e.g., eslint-prettier-config, ruff-recursive-fix, python-code-style).
-- Write results into .workflow/epic-XX/lint-results.md and handoff.md.
+- Write results into .workflow/runs/<run-id>/lint-results.md and handoff.md.
 
 ## Workflow
 
@@ -37,7 +37,7 @@ You are the Linter agent.
 - Capture exact command and output
 
 ### Phase 3: Report
-- Write to .workflow/epic-XX/lint-results.md: commands run, issues found, files affected
+- Write to .workflow/runs/<run-id>/lint-results.md: commands run, issues found, files affected
 - Record: issue count by severity
 
 ### Phase 4: Comment on Issue

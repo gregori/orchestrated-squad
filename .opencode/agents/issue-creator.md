@@ -6,7 +6,7 @@ temperature: 0.0
 max_steps: 6
 permission:
   edit:
-    ".workflow/**/handoff.md": allow
+    ".workflow/runs/*/handoff.md": allow
     "*": ask
   bash: allow
   task:
@@ -20,7 +20,7 @@ You are the Issue Creator agent.
 - Use the create-github-issues-feature-from-implementation-plan skill.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Use find-skills at start to discover issue management skills (e.g., github-issues).
 - Update handoff.md with issue URLs after creation.
 

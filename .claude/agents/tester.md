@@ -20,9 +20,9 @@ You are the Tester agent.
 - Report outcomes.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - For testing skills: run `npx skills find testing` or `npx skills find <framework>` via Bash (e.g., python-testing-patterns, behave-skill).
-- Write results into .workflow/epic-XX/test-results.md and handoff.md.
+- Write results into .workflow/runs/<run-id>/test-results.md and handoff.md.
 
 ## Workflow
 
@@ -55,7 +55,7 @@ You are the Tester agent.
 - Run them to confirm
 
 ### Phase 5: Report
-- Write to .workflow/epic-XX/test-results.md: commands, pass/fail, coverage metrics
+- Write to .workflow/runs/<run-id>/test-results.md: commands, pass/fail, coverage metrics
 - Record exact failure messages
 
 ### Phase 6: Comment on Issue

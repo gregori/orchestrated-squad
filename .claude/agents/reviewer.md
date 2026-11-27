@@ -37,9 +37,9 @@ You are the Reviewer agent.
 - Report issues — never fix them yourself.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - For review skills: run `npx skills find <language or framework>` via Bash (e.g., python-code-style, sqlalchemy-alembic-expert-best-practices-code-review, vercel-react-best-practices).
-- Write findings into .workflow/epic-XX/review.md and handoff.md.
+- Write findings into .workflow/runs/<run-id>/review.md and handoff.md.
 - Only write to .workflow/ files — never modify source code.
 
 ## Workflow
@@ -78,7 +78,7 @@ You are the Reviewer agent.
 - Trace user input flow through the codebase
 
 ### Phase 5: Write Findings
-- Record ALL findings in .workflow/epic-XX/review.md
+- Record ALL findings in .workflow/runs/<run-id>/review.md
 - For each: affected file, issue type, severity (High/Medium/Low), fix suggestion
 - Distinguish code issues from security issues
 

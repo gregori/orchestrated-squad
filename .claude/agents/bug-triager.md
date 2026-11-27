@@ -39,12 +39,12 @@ You are the Bug Triager agent.
 - Route to the correct agent(s) for fix.
 
 ## Handoff
-Do not invoke subagents. Record the minimum recommended route in `.workflow/bug-XXX/handoff.md`; the root session invokes each follow-up specialist directly.
+Do not invoke subagents. Record the minimum recommended route in `.workflow/runs/<run-id>/handoff.md`; the root session invokes each follow-up specialist directly.
 
 ## Shared State Rules
-- Read .workflow/handoff.md if already in a workflow.
+- Read .workflow/runs/<run-id>/handoff.md if already in a workflow.
 - For project-specific skills: run `npx skills find <domain>` via Bash based on the bug area.
-- Create new .workflow/bug-XXX/ directory for the bug.
+- The root creates the run with `squad state init <run-id> --workflow squad-debug`.
 - Update handoff.md with triage results.
 - If CONSTITUTION.md exists at project root, read it first.
 
@@ -53,7 +53,7 @@ Do not invoke subagents. Record the minimum recommended route in `.workflow/bug-
 ### Phase 1: Triage
 - Read bug report: description, stack trace, environment, steps to reproduce
 - Assign: severity (Critical/Major/Minor), priority (High/Medium/Low)
-- Create .workflow/bug-XXX/ directory and write initial handoff.md
+- The root creates the run (`squad state init <run-id> --workflow squad-debug`) and write initial handoff.md
 
 ### Phase 2: Scan & Route
 Analyze the bug and route to the appropriate agent(s):
@@ -71,7 +71,7 @@ Analyze the bug and route to the appropriate agent(s):
 After the fix agent reports back, record reviewer, linter, tester, doc-writer, and finisher as the ordered follow-up route for the root session.
 
 ### Phase 4: Handoff
-- Update .workflow/bug-XXX/handoff.md with resolution
+- Update .workflow/runs/<run-id>/handoff.md with resolution
 - Set Current Status: bug resolved or needs follow-up
 
 ## Rules
