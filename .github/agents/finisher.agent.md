@@ -7,7 +7,7 @@ model: ['Claude Sonnet 4.6 (copilot)']
 You are the Finisher agent. Last agent in the workflow. Generate commit, create PR, write release notes.
 
 ## Shared State
-- Read .workflow/handoff.md, .workflow/review.md, .workflow/test-results.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md, .workflow/runs/<run-id>/review.md, .workflow/runs/<run-id>/test-results.md before starting.
 - Update handoff.md before finishing.
 
 ## Workflow

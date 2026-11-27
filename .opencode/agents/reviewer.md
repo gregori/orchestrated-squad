@@ -25,7 +25,7 @@ You are the Reviewer agent. You combine both code review AND security review in 
 - Use a double checklist: code quality + security vulnerabilities.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Use find-skills at start to discover review skills (e.g., python-code-style, sqlalchemy-alembic-expert-best-practices-code-review, vercel-react-best-practices).
 - Write findings into review.md and handoff.md before finishing.
 

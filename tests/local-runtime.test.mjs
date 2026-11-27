@@ -89,3 +89,24 @@ test('codex: global phase-guard and read-only agent hooks are installed, and app
   const bash = JSON.stringify({ hook_event_name: 'PreToolUse', cwd: root, tool_name: 'Bash', tool_input: { command: 'git checkout -- .' } });
   assert.equal(local(root, ['hook', 'phase-guard'], bash, env).status, 2);
 });
+
+test('only the run in .workflow/active restricts edits; abandon releases it', async (t) => {
+  const root = await installed(t, 'devin');
+  const env = { DEVIN_PROJECT_DIR: root };
+  const guard = () => local(root, ['hook', 'phase-guard'], edit('src/a.js'), env);
+  assert.equal(local(root, ['state', 'init', 'old', '--workflow', 'squad-debug']).status, 0);
+  assert.equal(local(root, ['state', 'transition', 'old', '--to', 'diagnosis']).status, 0);
+  assert.equal(guard().status, 2);
+  // uma run nova vira a ativa: a antiga, esquecida em diagnosis, não trava mais
+  assert.equal(local(root, ['state', 'init', 'new']).status, 0);
+  assert.equal((await readFile(path.join(root, '.workflow', 'active'), 'utf8')).trim(), 'new');
+  assert.equal(guard().status, 0);
+  assert.equal(local(root, ['state', 'activate', 'old']).status, 0);
+  assert.equal(guard().status, 2);
+  assert.notEqual(local(root, ['state', 'abandon', 'old']).status, 0); // exige motivo
+  const abandoned = local(root, ['state', 'abandon', 'old', '--reason', 'esquecida']);
+  assert.equal(JSON.parse(abandoned.stdout).status, 'abandoned');
+  assert.equal(guard().status, 0);
+  assert.equal(local(root, ['state', 'transition', 'old', '--to', 'diagnosed']).status, 1);
+  assert.notEqual(local(root, ['state', 'activate', 'old']).status, 0);
+});

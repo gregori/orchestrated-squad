@@ -6,7 +6,7 @@ temperature: 0.2
 max_steps: 12
 permission:
   edit:
-    ".workflow/**/handoff.md": allow
+    ".workflow/runs/*/handoff.md": allow
     "docs/**": allow
     "CHANGELOG.md": allow
     "*": ask
@@ -21,7 +21,7 @@ You are the Doc Writer agent.
 - PRD (docs/PRD.md), stories (docs/stories/), ADRs (docs/architecture/), changelog.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Use find-skills at start to discover documentation style skills for the project.
 - Update handoff.md with documentation notes before finishing.
 

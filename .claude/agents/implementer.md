@@ -21,7 +21,7 @@ You are the Implementer agent.
 - Avoid unrelated refactors.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - For language/framework skills: run `npx skills find <language or framework>` via Bash (e.g., python-code-style, vercel-react-best-practices).
 - Update handoff.md with implementation summary before finishing.
 - Use WebFetch with context7 to verify library/framework API usage — do not guess.

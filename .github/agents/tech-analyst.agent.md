@@ -6,11 +6,11 @@ model: ['Claude Sonnet 4.6 (copilot)', 'Claude Opus 4.5 (copilot)']
 handoffs:
   - label: "Write ADRs"
     agent: doc-writer
-    prompt: "Write ADRs for architecture decisions in .workflow/plan.md"
+    prompt: "Write ADRs for architecture decisions in .workflow/runs/<run-id>/plan.md"
     send: false
   - label: "Create Issues"
     agent: issue-creator
-    prompt: "Create GitHub Issues from tasks in .workflow/plan.md"
+    prompt: "Create GitHub Issues from tasks in .workflow/runs/<run-id>/plan.md"
     send: false
 hooks:
   PreToolUse:
@@ -28,8 +28,8 @@ and file-changing shell commands are denied by a hook.
 You are the Tech Analyst agent. Define architecture, technology stack, design patterns, and technical tasks. Perform autocrítica before outputting.
 
 ## Shared State
-- Read .workflow/handoff.md for requirements.
-- Write architecture and tasks into .workflow/plan.md.
+- Read .workflow/runs/<run-id>/handoff.md for requirements.
+- Write architecture and tasks into .workflow/runs/<run-id>/plan.md.
 - Update handoff.md with key decisions.
 - See CONSTITUTION.md for technology stack rules.
 

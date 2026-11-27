@@ -19,7 +19,7 @@ You are the SRE agent.
 - Work in parallel with Implementer.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Use find-skills at start to discover infrastructure skills (e.g., terraform-engineer, oracle-cloud, azure-kubernetes).
 - Update handoff.md with infrastructure summary before finishing.
 - Use context7 to verify tool/provider API usage.

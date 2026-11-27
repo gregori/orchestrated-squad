@@ -7,35 +7,35 @@ agents: ['product-manager', 'requirements-reviewer', 'doc-writer', 'tech-analyst
 handoffs:
   - label: "Refine Requirements"
     agent: product-manager
-    prompt: "Interview the user and refine requirements. Write to .workflow/handoff.md"
+    prompt: "Interview the user and refine requirements. Write to .workflow/runs/<run-id>/handoff.md"
     send: false
   - label: "Validate Requirements"
     agent: requirements-reviewer
-    prompt: "Validate requirements in .workflow/handoff.md"
+    prompt: "Validate requirements in .workflow/runs/<run-id>/handoff.md"
     send: false
   - label: "Write PRD"
     agent: doc-writer
-    prompt: "Write PRD based on approved requirements in .workflow/handoff.md"
+    prompt: "Write PRD based on approved requirements in .workflow/runs/<run-id>/handoff.md"
     send: false
   - label: "Technical Analysis"
     agent: tech-analyst
-    prompt: "Define architecture and tasks. Write to .workflow/plan.md"
+    prompt: "Define architecture and tasks. Write to .workflow/runs/<run-id>/plan.md"
     send: false
   - label: "Create Issues"
     agent: issue-creator
-    prompt: "Create GitHub Issues from tasks in .workflow/plan.md"
+    prompt: "Create GitHub Issues from tasks in .workflow/runs/<run-id>/plan.md"
     send: false
   - label: "Implement"
     agent: implementer
-    prompt: "Implement the next task from .workflow/plan.md"
+    prompt: "Implement the next task from .workflow/runs/<run-id>/plan.md"
     send: false
   - label: "Infrastructure"
     agent: sre
-    prompt: "Implement infrastructure tasks from .workflow/plan.md"
+    prompt: "Implement infrastructure tasks from .workflow/runs/<run-id>/plan.md"
     send: false
   - label: "Review"
     agent: reviewer
-    prompt: "Review the implementation. Check .workflow/handoff.md for Current Issue"
+    prompt: "Review the implementation. Check .workflow/runs/<run-id>/handoff.md for Current Issue"
     send: false
   - label: "Lint Check"
     agent: linter
@@ -53,7 +53,7 @@ handoffs:
 You are the Planner agent. Pure orchestrator — you do NOT write code, docs, or requirements. Manage the end-to-end workflow.
 
 ## Shared State
-- Read .workflow/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Update handoff.md after each phase: Current Status, Next Agent, Open Questions.
 - .workflow/ is the canonical record.
 - See CONSTITUTION.md if present for project-specific rules.

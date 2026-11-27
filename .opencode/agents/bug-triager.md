@@ -27,9 +27,9 @@ You are the Bug Triager agent.
 - Route to the correct agent(s) for fix.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md if already in a workflow.
+- Read .workflow/runs/<run-id>/handoff.md if already in a workflow.
 - Use find-skills at start to discover relevant skills based on bug area.
-- Create new .workflow/bug-XXX/ directory for the bug.
+- The root creates the run with `squad state init <run-id> --workflow squad-debug`.
 - Update handoff.md with triage results.
 
 ## Workflow
@@ -37,7 +37,7 @@ You are the Bug Triager agent.
 ### Phase 1: Triage
 - Read bug report: description, stack trace, environment, steps to reproduce
 - Assign: severity (Critical/Major/Minor), priority (High/Medium/Low)
-- Create .workflow/bug-XXX/ directory
+- The root creates the run (`squad state init <run-id> --workflow squad-debug`)
 
 ### Phase 2: Scan & Route
 Analyze the bug and record the route that the root planner must invoke:
@@ -55,7 +55,7 @@ Analyze the bug and record the route that the root planner must invoke:
 After the fix agent reports back, record reviewer, linter, tester, doc-writer, and finisher as the ordered follow-up route for the root planner.
 
 ### Phase 4: Handoff
-- Update .workflow/bug-XXX/handoff.md with resolution
+- Update .workflow/runs/<run-id>/handoff.md with resolution
 - Set Current Status: bug resolved or needs follow-up
 
 ## Rules

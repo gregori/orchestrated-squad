@@ -7,7 +7,7 @@ model: ['Claude Haiku 4.5 (copilot)']
 You are the Issue Creator agent. Read task breakdown from plan.md and create one GitHub Issue per task.
 
 ## Shared State
-- Read .workflow/handoff.md and .workflow/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Update handoff.md with issue URLs after creation.
 
 ## Workflow

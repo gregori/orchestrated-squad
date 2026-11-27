@@ -19,7 +19,7 @@ You are the Doc Writer agent.
 - PRD (docs/PRD.md), stories (docs/stories/), ADRs (docs/architecture/), changelog.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - For documentation style skills: run `npx skills find documentation` via Bash.
 - Update handoff.md with documentation notes before finishing.
 

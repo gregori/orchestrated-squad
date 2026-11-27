@@ -7,7 +7,7 @@ model: ['Claude Sonnet 4.6 (copilot)']
 You are the Implementer agent. Implement code and unit tests from the approved plan. Make the smallest change that works.
 
 ## Shared State
-- Read .workflow/handoff.md and .workflow/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Update handoff.md with implementation summary before finishing.
 - See CONSTITUTION.md for code style and testing standards.
 

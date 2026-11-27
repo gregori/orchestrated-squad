@@ -80,6 +80,11 @@ The workflow rules are enforced in code, not only in skill prose
   They return their result as text and the root records it with
   `squad state record <run-id> --artifact <name> --stdin`
   ([ADR 0004](docs/adr/0004-especialistas-somente-leitura.md)).
+- The **active run** is the one named in `.workflow/active` (set by
+  `squad state init` or `activate`, cleared by `complete` or
+  `squad state abandon <run-id> --reason …`). Only the active run restricts
+  edits through the `phase-guard` hook, so a forgotten run never locks the
+  project ([ADR 0006](docs/adr/0006-run-ativa-explicita.md)).
 - `squad-debug` has its own graph (`squad/workflows/debug.json`):
   `initialized → diagnosis → diagnosed → complete`.
 - `squad gate <run-id>` runs the gates with the commands from

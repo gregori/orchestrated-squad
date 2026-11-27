@@ -18,7 +18,7 @@ You are the Issue Creator agent.
 - Reference `.agents/skills/github-issues/SKILL.md` for gh api patterns.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md and .workflow/epic-XX/plan.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md and .workflow/runs/<run-id>/plan.md before starting.
 - Update handoff.md with issue URLs after creation.
 
 ## Workflow

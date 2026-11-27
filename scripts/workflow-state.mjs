@@ -8,6 +8,23 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 // No pacote: squad/workflows; na cópia instalada em .squad/bin: ./workflows
 const workflowDirs = [path.join(here, 'workflows'), path.resolve(here, '..', 'squad', 'workflows')];
 const now = () => new Date().toISOString();
+const activeFile = (root) => path.join(root, '.workflow', 'active');
+
+/**
+ * Run ativa do projeto: um ponteiro explícito em `.workflow/active`. É o que o
+ * `phase-guard` respeita; sem ponteiro, nenhuma run restringe edições. Definido
+ * no `init` (e por `activate`), removido ao completar ou abandonar a run.
+ */
+export async function readActive(root) {
+  try { return (await readFile(activeFile(root), 'utf8')).trim() || null; } catch { return null; }
+}
+export async function setActive(root, runId) {
+  await mkdir(path.dirname(activeFile(root)), { recursive: true });
+  await writeFile(activeFile(root), `${runId}\n`);
+}
+async function clearActive(root, runId) {
+  if ((await readActive(root)) === runId) { const { rm } = await import('node:fs/promises'); await rm(activeFile(root), { force: true }); }
+}
 const stateFile = (runDir) => path.join(runDir, 'state.json');
 
 /** Recusa de transição: o guard explica o motivo em linguagem legível. */
@@ -92,6 +109,7 @@ export async function createRun(root, { runId, workflow = 'squad-feature', maxCy
   await atomicJson(stateFile(runDir), state);
   await writeFile(path.join(runDir, 'handoff.md'), `## Current Status\n\n- Phase: initialized\n\n## Next Agent\n\n- root\n\n## Decisions\n\n| ID | Decision | Rationale |\n|---|---|---|\n\n## Open Questions\n\n-\n`);
   await appendEvent(runDir, { type: 'run_initialized', phase: state.phase });
+  await setActive(root, runId);
   return { runDir, state };
 }
 
@@ -148,6 +166,7 @@ export async function checkTransition(runDir, previous, patch) {
   const from = previous.phase;
   if (to === from) return [];
   if (previous.status === 'complete') return ['run is complete'];
+  if (previous.status === 'abandoned') return ['run was abandoned'];
   if (to === 'blocked') return patch.blocked_reason ? [] : ['blocking a run requires a reason'];
   if (from === 'blocked') {
     return to === previous.blocked_from ? [] : [`a blocked run resumes only to '${previous.blocked_from}'`];
@@ -189,7 +208,7 @@ export async function transition(runDir, patch) {
   const state = { ...previous, ...patch, updated_at: now() };
   if (to === 'blocked' && previous.phase !== 'blocked') { state.status = 'blocked'; state.blocked_from = previous.phase; }
   if (previous.phase === 'blocked' && to !== 'blocked') { state.status = 'active'; delete state.blocked_from; delete state.blocked_reason; }
-  if (to === 'complete') state.status = 'complete';
+  if (to === 'complete') { state.status = 'complete'; await clearActive(projectRoot(runDir), previous.run_id); }
   if ((workflow?.cycle_transitions ?? []).some(([a, b]) => a === previous.phase && b === to)) state.cycle = previous.cycle + 1;
   if (to !== previous.phase) {
     const resuming = previous.phase === 'blocked' && previous.phase_entry?.phase === to;
@@ -199,6 +218,18 @@ export async function transition(runDir, patch) {
   }
   await atomicJson(stateFile(runDir), state);
   await appendEvent(runDir, { type: 'state_transition', from: previous.phase, to: state.phase, status: state.status });
+  return state;
+}
+
+/** Encerra uma run sem concluí-la: sai do ponteiro de run ativa e não aceita mais transições. */
+export async function abandonRun(runDir, reason) {
+  if (!reason) throw new Error('abandoning a run requires a reason');
+  const previous = await readState(runDir);
+  if (['complete', 'abandoned'].includes(previous.status)) throw new Error(`run is already ${previous.status}`);
+  const state = { ...previous, status: 'abandoned', abandoned_reason: reason, updated_at: now() };
+  await atomicJson(stateFile(runDir), state);
+  await appendEvent(runDir, { type: 'run_abandoned', phase: previous.phase });
+  await clearActive(projectRoot(runDir), previous.run_id);
   return state;
 }
 

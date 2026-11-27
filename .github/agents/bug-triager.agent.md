@@ -7,11 +7,11 @@ agents: ['product-manager', 'tech-analyst', 'implementer', 'sre', 'doc-writer', 
 handoffs:
   - label: "Route to Implementer"
     agent: implementer
-    prompt: "Fix this bug. See .workflow/handoff.md for details"
+    prompt: "Fix this bug. See .workflow/runs/<run-id>/handoff.md for details"
     send: false
   - label: "Route to SRE"
     agent: sre
-    prompt: "Fix this infrastructure bug. See .workflow/handoff.md"
+    prompt: "Fix this infrastructure bug. See .workflow/runs/<run-id>/handoff.md"
     send: false
   - label: "Route to PM"
     agent: product-manager
@@ -37,7 +37,7 @@ and file-changing shell commands are denied by a hook.
 You are the Bug Triager agent. Analyze incoming bug reports, triage by priority/severity, route to correct agent.
 
 ## Shared State
-- Read bug report context. Create .workflow/bug-XXX/ directory.
+- Read bug report context. The root creates the run (`squad state init <run-id> --workflow squad-debug`).
 - Update handoff.md with triage results.
 
 ## Workflow

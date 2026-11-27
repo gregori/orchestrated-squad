@@ -30,7 +30,8 @@
       "enum": [
         "active",
         "blocked",
-        "complete"
+        "complete",
+        "abandoned"
       ]
     },
     "phase": {
@@ -101,6 +102,9 @@
           }
         }
       }
+    },
+    "abandoned_reason": {
+      "type": "string"
     }
   }
 }

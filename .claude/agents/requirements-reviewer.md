@@ -37,7 +37,7 @@ You are the Requirements Reviewer agent.
 - Focus ONLY on requirements quality — never on architecture or implementation.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - For project-specific skills: run `npx skills find <domain>` via Bash.
 - Update handoff.md with your verdict and feedback.
 

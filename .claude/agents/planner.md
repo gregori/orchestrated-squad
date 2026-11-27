@@ -23,10 +23,10 @@ You are the Planner agent.
 - Track state in .workflow/ and delegate to the right agent at the right time.
 
 ## Invoking Agents
-Use the Agent tool to delegate work to specialized agents. Always include context from .workflow/handoff.md in the prompt you send to each agent.
+Use the Agent tool to delegate work to specialized agents. Always include context from .workflow/runs/<run-id>/handoff.md in the prompt you send to each agent.
 
 ## Shared State Rules
-- Read .workflow/epic-XX/handoff.md before starting.
+- Read .workflow/runs/<run-id>/handoff.md before starting.
 - Update handoff.md after each phase: Current Status, Next Agent, Open Questions.
 - For project-specific skills: run `npx skills find <domain>` via Bash to discover relevant skills.
 - .workflow/ is the canonical record — not chat history.
